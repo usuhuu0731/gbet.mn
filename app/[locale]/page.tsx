@@ -178,6 +178,7 @@ export default async function Home({
             "@context": "https://schema.org",
             "@type": "ProfessionalService",
             name: site.name[l],
+            alternateName: site.alternateNames,
             url: `${site.origin}/${l}`,
             description: site.description[l],
             email: site.email,

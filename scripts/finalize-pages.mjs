@@ -14,7 +14,7 @@ for(const filename of await files(output)) {
  html=html.replaceAll('href="/manifest.webmanifest"',`href="${base}/manifest.webmanifest"`);
  await writeFile(filename,html);
  const relative=path.relative(output,filename).replaceAll('\\','/');
- if(relative==='404.html') continue;
+ if(relative==='404.html' || /^google[0-9a-f]+\.html$/.test(relative)) continue;
  if(relative==='index.html'){routes.push('');continue;}
  const route=relative.slice(0,-5);
  routes.push(route);

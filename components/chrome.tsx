@@ -144,7 +144,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         <span>
           © {new Date().getFullYear()} {site.name[locale]}
         </span>
-        <span>ULAANBAATAR, MONGOLIA</span>
+        <span>GBET LLC · gbet.mn · ULAANBAATAR, MONGOLIA</span>
       </div>
     </footer>
   );

@@ -13,7 +13,7 @@ export default function Entry() {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: site.name.mn,
-      alternateName: [site.name.en, "GBET"],
+      alternateName: site.alternateNames,
       url: `${site.origin}/`,
     }).replace(/</g, "\\u003c")}} />
   </>;

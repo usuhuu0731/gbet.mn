@@ -6,6 +6,7 @@ export const locales: Locale[] = ["mn", "en"];
 export const site = {
   origin: publicOrigin,
   name: text("ГБЭТ ХХК", "GBET Consulting Engineers"),
+  alternateNames: ["ГБЭТ", "ГБЭТ ХХК", "GBET", "GBET LLC", "GBET MN", "gbet.mn", "GBET Consulting Engineers"],
   homeTitle: text(
     "Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК",
     "GBET Consulting Engineers | Bridge Design Mongolia",
@@ -19,8 +20,8 @@ export const site = {
   contactSource:
     "https://user.tender.gov.mn/uploads/question/68145e70858e5.pdf",
   description: text(
-    "Гүүр, туннель, хотын авто зам, замын байгууламжийн зураг төсөл, техник-эдийн засгийн үндэслэлийн Монголын зөвлөх инженерийн компани.",
-    "A Mongolian consulting engineering company focused on bridge and tunnel design, urban road structures and infrastructure feasibility studies.",
+    "ГБЭТ ХХК (GBET LLC) — гүүр, туннель, хотын авто зам, замын байгууламжийн зураг төсөл, техник-эдийн засгийн үндэслэлийн Монголын зөвлөх инженерийн компани.",
+    "GBET LLC (ГБЭТ ХХК) is a Mongolian consulting engineering company focused on bridge and tunnel design, urban road structures and infrastructure feasibility studies.",
   ),
 };
 export const nav = [
