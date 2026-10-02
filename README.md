@@ -45,4 +45,4 @@ The Mongolian homepage title is “Зураг төсөл, технологи-и�
 
 Local static validation: 34 localized routes, filters, locale switching, form validation, skip link, menu keyboard operation, reduced motion, 320/390/768/1440 widths and 200% text enlargement passed; no page errors or failed asset requests. Production build, lint and TypeScript checks are required on each deployment. These checks are not a WCAG certification or field Core Web Vitals guarantee.
 
-Custom domain and DNS changes require separate configuration and a tested origin/base-path change. Do not just add CNAME while retaining repository-prefixed assets.
+The deployed GitHub Pages site uses `https://gbet.mn`. The workflow sets `GBET_PUBLIC_ORIGIN=https://gbet.mn`, which selects root asset paths, canonical URLs, sitemap and an exported CNAME. Set this variable locally when testing the custom-domain build. Without it, the adapter still supports repository-prefixed GitHub Pages builds. DNS and repository Pages settings must agree with the build origin; changing DNS alone is insufficient. No database migration is involved.

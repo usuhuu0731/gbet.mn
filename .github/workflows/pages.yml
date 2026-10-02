@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GBET_REPOSITORY: ${{ github.repository }}
+      GBET_PUBLIC_ORIGIN: https://gbet.mn
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
