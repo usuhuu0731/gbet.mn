@@ -1,0 +1,6 @@
+import {createServer} from 'node:http';
+import {readFile,stat} from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve('site');const base='/gbet.mn';
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.rsc':'text/x-component','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2','.xml':'application/xml','.webmanifest':'application/manifest+json'};
+createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost');if(!url.pathname.startsWith(base+'/')){res.writeHead(404);res.end('Not found');return;}let file=path.resolve(root,'.'+decodeURIComponent(url.pathname.slice(base.length)));if(!file.startsWith(root+path.sep)&&file!==root)throw Error('Unsafe path');const s=await stat(file);if(s.isDirectory()){if(!url.pathname.endsWith('/')){res.writeHead(301,{Location:url.pathname+'/'});res.end();return;}file=path.join(file,'index.html');}const data=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});res.end(data);}catch{res.writeHead(404);res.end('Not found');}}).listen(5174,'127.0.0.1',()=>console.log('Static Pages preview: http://127.0.0.1:5174/gbet.mn/'));
