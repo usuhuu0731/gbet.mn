@@ -9,7 +9,7 @@ export function pageMetadata(
   const suffix = path ? `/${path}` : "";
   const url = `${site.origin}/${locale}${suffix}/`;
   return {
-    title,
+    title: path ? title : { absolute: title },
     description,
     alternates: {
       canonical: url,

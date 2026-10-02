@@ -19,9 +19,7 @@ export async function generateMetadata({
   return pageMetadata(
     locale,
     "",
-    locale === "mn"
-      ? "ГБЭТ ХХК | Гүүрийн зураг төсөл, зөвлөх инженер"
-      : "GBET Consulting Engineers | Bridge Design Mongolia",
+    site.homeTitle[locale],
   );
 }
 export default async function Home({

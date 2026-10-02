@@ -6,6 +6,10 @@ export const locales: Locale[] = ["mn", "en"];
 export const site = {
   origin: publicOrigin,
   name: text("ГБЭТ ХХК", "GBET Consulting Engineers"),
+  homeTitle: text(
+    "Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК",
+    "GBET Consulting Engineers | Bridge Design Mongolia",
+  ),
   email: "gbetllc@gmail.com",
   contactEndpoint: "",
   address: text(

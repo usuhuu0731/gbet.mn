@@ -39,6 +39,10 @@ The engineering viewer is optional and not mounted in the photographic homepage.
 
 ## Validation
 
+## Search appearance
+
+The Mongolian homepage title is “Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК”; it uses an absolute title to avoid repeating the company suffix. The root includes WebSite structured data with the company name. Google decides the displayed title and site name after crawling. Its site-name feature does not support the `/gbet.mn/` subdirectory on GitHub Pages; a dedicated domain or subdomain is needed for a separately recognized site name. After connecting an owned domain, verify it in Google Search Console, submit the sitemap, and request indexing for the homepage. No ownership verification or indexing submission has been performed by this repository.
+
 Local static validation: 34 localized routes, filters, locale switching, form validation, skip link, menu keyboard operation, reduced motion, 320/390/768/1440 widths and 200% text enlargement passed; no page errors or failed asset requests. Production build, lint and TypeScript checks are required on each deployment. These checks are not a WCAG certification or field Core Web Vitals guarantee.
 
 Custom domain and DNS changes require separate configuration and a tested origin/base-path change. Do not just add CNAME while retaining repository-prefixed assets.
