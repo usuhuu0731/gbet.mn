@@ -48,7 +48,7 @@ The MN homepage title remains “Зураг төсөл, технологи-ин�
 
 ## Compatibility and migration
 
-Vinext beta.5, plugin-rsc 0.5.26, React 19.2.6 and the established export adapter remain the design baseline. Unused UI/database/3D dependencies were removed after the initial design passed its checks. Framework/security upgrades are tested in a separate branch/PR. Registry availability and a passing build do not demonstrate static-export compatibility. Never use `--force` or `--legacy-peer-deps` to conceal dependency conflicts.
+The redesign was implemented and deployed on Vinext beta.5 / plugin-rsc 0.5.26 / React 19.2.6 first. The separate compatibility upgrade uses Vinext 1.0.1, plugin-rsc 0.5.34, Vite 8.3.2 and Next/eslint-config-next 16.3.8 while preserving React 19.2.6 and the export adapter. See [COMPATIBILITY.md](COMPATIBILITY.md) for checks, measurements and rollback. Registry availability and a passing build do not demonstrate static-export compatibility. Never use `--force` or `--legacy-peer-deps` to conceal dependency conflicts.
 
 Vinext's native basePath/trailingSlash settings did not export this application correctly. Keep `scripts/finalize-pages.mjs`: it converts flat HTML into route/index.html, preserves the Google verification file, and creates static metadata. Removing it requires explicit replacement tests for custom domain, repository prefix, redirects, direct detail links, images/CSS/fonts and invalid routes.
 
