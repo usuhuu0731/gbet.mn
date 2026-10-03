@@ -33,6 +33,7 @@ export default async function Detail({
   const { locale: l, slug } = await params;
   const p = projects.find((p) => p.slug === slug);
   if (!p) notFound();
+  const nextProject = projects[(projects.findIndex(project => project.slug === slug) + 1) % projects.length];
   const facts = [
     [text("Захиалагч", "Client"), p.client?.[l]],
     [text("ГБЭТ-ийн үүрэг", "GBET role"), p.role?.[l]],
@@ -105,8 +106,9 @@ export default async function Detail({
             <section className="case-section" key={i}>
               <span className="section-number">0{i + 1}</span>
               <h2>{s[l]}</h2>
-              <p>{ui.pending[l]}</p>
-              {i === 5 && (
+              {i !== 5 && <p>{ui.pending[l]}</p>}
+              {i === 5 && p.image?.usageApproved && <ProjectImage project={p} locale={l} />}
+              {i === 5 && !p.image?.usageApproved && (
                 <div className="drawing-empty">
                   {l === "mn"
                     ? "Баталгаажсан зураг, гэрэл зураг болон техникийн материал нэмэх хэсэг."
@@ -117,6 +119,7 @@ export default async function Detail({
           ))}
         </div>
       </section>
+      <section className="case-next"><div><p className="eyebrow">{l === "mn" ? "ДАРААГИЙН ТӨСӨЛ" : "NEXT PROJECT"}</p><h2><Link href={`/${l}/projects/${nextProject.slug}`}>{nextProject.name[l]}</Link></h2></div><Link className="text-link" href={`/${l}/projects/${nextProject.slug}`}>{l === "mn" ? "Үзэх" : "Explore"} <span aria-hidden="true">↗</span></Link></section>
       <ContactCTA locale={l} />
       <StructuredData locale={l} path={`projects/${slug}`} title={p.name[l]} />
     </main>

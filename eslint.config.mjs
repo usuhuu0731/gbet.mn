@@ -20,22 +20,12 @@ const eslintConfig = defineConfig([
   {
     files: [
       "components/chrome.tsx",
-      "components/bridge-viewer.tsx",
       "components/projects.tsx",
+      "components/team.tsx",
       "app/[[]locale]/page.tsx",
       "app/[[]locale]/[[]page]/page.tsx",
     ],
     rules: { "@next/next/no-img-element": "off" }, // Local pre-sized assets; no external image optimizer in Sites.
-  },
-  {
-    files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
-    rules: {
-      // These files are vendored verbatim from shadcn@4.17.0. Keep the
-      // registry source intact while applying the stricter rules to Site code.
-      "@typescript-eslint/no-unused-vars": "off",
-      "react-hooks/purity": "off",
-      "react-hooks/set-state-in-effect": "off",
-    },
   },
 ]);
 

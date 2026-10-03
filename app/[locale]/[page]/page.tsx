@@ -21,6 +21,7 @@ import {
 } from "../../../components/sections";
 
 import { StructuredData } from "../../../components/structured-data";
+import { TeamGrid, TeamSection, DirectorMessage } from "../../../components/team";
 const valid = nav.map((n) => n.path).filter(Boolean);
 export async function generateMetadata({
   params,
@@ -40,6 +41,7 @@ export default async function ContentPage({
   if (!valid.includes(page)) notFound();
   const n = nav.find((n) => n.path === page)!;
   const titles: Record<string, ReturnType<typeof text>> = {
+    team: text("Шийдлийн цаадах\nхүмүүс.", "The people behind\nthe design."),
     about: text(
       "Гүүрийн инженерчлэлд\nтөвлөрсөн компани.",
       "A practice focused\non bridge engineering.",
@@ -81,6 +83,7 @@ export default async function ContentPage({
           <ProjectFilter projects={projects} locale={l} />
         </section>
       )}
+      {page === "team" && <section className="section page-content team-page"><p className="team-introduction">{l === "mn" ? "ГБЭТ ХХК-ийн удирдлага, инженерчлэл болон төслийн гүйцэтгэлийн баг." : "The leadership, engineering and project delivery team at GBET."}</p><TeamGrid locale={l} /></section>}
       {page === "about" && (
         <>
           <section className="section intro">
@@ -154,18 +157,8 @@ export default async function ContentPage({
           <section className="section">
             <CredentialPanel locale={l} />
           </section>
-          <section className="section">
-            <SectionHeading
-              number="04"
-              label={l === "mn" ? "БАГ" : "OUR PEOPLE"}
-              title={l === "mn" ? "Инженерийн баг." : "The engineering team."}
-            />
-            <p className="empty">
-              {l === "mn"
-                ? "Багийн танилцуулга, мэргэжлийн мэдээллийг зөвшөөрөл болон дотоод хяналтын дараа нэмнэ."
-                : "Team profiles and professional biographies will be added following approval and internal review."}
-            </p>
-          </section>
+          <DirectorMessage locale={l} />
+          <TeamSection locale={l} />
         </>
       )}
       {page === "expertise" && (

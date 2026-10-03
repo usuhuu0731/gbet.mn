@@ -35,11 +35,12 @@ export default async function LocaleLayout({
         <link rel="stylesheet" href={asset("/fonts/inter.css")}  />
         <link
           rel="preload"
-          href={`${basePath}/fonts/inter-${l === "mn" ? "cyrillic" : "latin"}-500-normal.woff2`}
+          href={`${basePath}/fonts/inter-${l === "mn" ? "cyrillic" : "latin"}-400-normal.woff2`}
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {l === "mn" && <link rel="preload" href={`${basePath}/fonts/inter-cyrillic-ext-400-normal.woff2`} as="font" type="font/woff2" crossOrigin="anonymous" />}
       </head>
       <body>
         <a className="skip" href="#main">

@@ -1,48 +1,57 @@
-# GBET Consulting Engineers — GitHub Pages
+# GBET Consulting Engineers
 
-MN/EN bridge engineering portfolio. This repository is the static GitHub Pages adaptation of the GBET Sites website. The existing Sites deployment remains separate.
+Bilingual Mongolian/English engineering portfolio at https://gbet.mn. GitHub Pages deploys only the static `site/` artifact. The earlier Sites deployment is separate.
 
-## Run and publish
+## Build, preview, and checks
 
-Use Node.js 24 and the committed lockfile:
+Use Node 24 with the committed lockfile. No forced peer dependency installation.
 
 ```sh
 npm ci
 export GBET_REPOSITORY=usuhuu0731/gbet.mn
+export GBET_PUBLIC_ORIGIN=https://gbet.mn
 npm run lint
 npx tsc --noEmit
 npm run build
+npx playwright install chromium
+npm run check:site
 node scripts/serve-static.mjs
 ```
 
-PowerShell: `$env:GBET_REPOSITORY='usuhuu0731/gbet.mn'`. Preview is `http://127.0.0.1:5174/gbet.mn/`. The strict static preview does not supply server rendering or an SPA fallback.
+PowerShell uses `$env:GBET_REPOSITORY='usuhuu0731/gbet.mn'` and `$env:GBET_PUBLIC_ORIGIN='https://gbet.mn'`. Preview: http://127.0.0.1:5174/mn/. `QA_BROWSER_PATH` can point to an existing Chromium executable; CI installs Playwright's matching browser. `QA_BASE_URL` optionally checks a deployed site; otherwise the test starts its own strict static server.
 
-In repository Settings → Pages, select **GitHub Actions** as Source. Every push to `main` builds and deploys only `site/`. No personal token is required by the workflow. The workflow derives the repository prefix and canonical origin from `github.repository`.
+Without `GBET_PUBLIC_ORIGIN`, repository-prefixed GitHub Pages export remains supported. Build and test with the same configuration. Never change domain DNS without matching the Pages settings and exported origin. `CNAME`, canonical, hreflang, robots, sitemap and manifest derive from this configuration.
 
-## Static adaptation and migration
+The workflow validates pull requests, and deploys successful main/manual builds. Checks include 36 localized routes, six staff members, filters, locale preservation, mailto form validation, keyboard navigation, reduced motion, responsive widths, 200% text enlargement, private artifact exclusions and automated axe checks. Screenshots/reports are CI artifacts, not public website assets. These checks are not a full WCAG certification or field Core Web Vitals guarantee.
 
-React/TypeScript, Tailwind and Vinext render 34 localized routes plus the root locale selector at build time. Root selection runs in the browser: saved language, browser English, then Mongolian. Every detail page has HTML for direct navigation. Standard anchor links preserve the repository prefix; language switching retains page/project identity.
+## Visual and content system
 
-`lib/paths.ts`, `lib/link.tsx`, `vite.config.ts` and `scripts/finalize-pages.mjs` implement repository paths and static metadata. Vinext beta's native basePath and trailingSlash settings did not prerender this application correctly; the export finalizer converts flat HTML into directory index files and emits sitemap, robots and manifest. Keep this adapter until a tested migration replaces it.
+The Korean BANDI website is the primary design reference for large engineering imagery, editorial hierarchy, whitespace and restrained interaction. sbp/Arup inform information relationships only. No reference code, photography or copy is reused. `app/globals.css` is one coherent responsive layout system, replacing the previous stack of overrides. Initial hero, featured project and staff layouts must be reviewed at desktop/mobile sizes before extending the design.
 
-Native Next.js App Router migration requires replacing injected path constants with environment configuration, restoring Next Link/basePath handling, reviewing the locale redirect and metadata handlers, and independently testing static export. Vinext/Next/Vercel compatibility is not guaranteed. No database or database migration is required.
+The original requirement for an interactive 3D hero and structure viewer is superseded for this release. Static photography/design imagery is the engineering presentation. Unmounted demo viewers and unused starter UI components were removed; a future 3D feature needs a separately approved quality review. Restrained image transitions use CSS and respect reduced motion.
 
-## Content, images and contact
+- `content/site.ts`: reviewed projects, services, navigation and site identity. Keep missing years/roles/measurements omitted.
+- `content/team.ts`: company-supplied current names and roles; approved biographies only. Latin name spellings await confirmation, so EN retains the supplied Cyrillic names.
+- `content/media.ts`: replaceable images, dimensions, bilingual alt text, crop position and website-use approval. Portrait permission is independent of professional-information approval.
 
-Typed bilingual content is in `content/site.ts`. Publish only reviewed facts. Omitted dates, roles and measurements must remain omitted until approved. News, careers and unavailable biographies have honest empty states. Private provenance records and the full source brochure are deliberately outside this repository and deployment artifact.
+Add an authorized portrait to `public/team/`, register a `kind: 'portrait'` asset with `usageApproved: true`, then set the member's `portraitId`. Unapproved/missing assets automatically use a 4:5 graphite placeholder. Do not use synthetic portraits, diploma scans, personal identifiers, signatures or private contacts. Do not fabricate employees or biographies.
 
-GBET supplied its logo and confirmed permission to use project imagery from its company brochure. `public/projects/ikh-tamir*.webp` is project photography; `sonsgolon-render.webp` is explicitly identified as a rendering; `railway-construction.webp` is a construction photograph. Permission for this website does not grant unrelated reuse. Replace images only with authorized files, update bilingual alt text/captions, and preserve image dimensions. Local Inter fonts retain their bundled license and Cyrillic support.
+The director's message component is ready but `directorMessage.approved` is false and its public paragraph list is empty. Keep drafts and review records outside this repository. After company review, copy the approved MN/EN paragraphs into `content/team.ts` and enable publication. A disabled flag is not sufficient protection for an unapproved draft stored in a public module.
 
-The contact form validates in MN/EN and opens a `mailto` draft to the published company email; it does not send a message or claim delivery. A future endpoint needs an explicit implementation with error/progress states and a public privacy review. GitHub Pages supplies no backend. No CMS, analytics, login or paid assets are configured.
+Project files were supplied by GBET with permission for this website. Rendering/photo distinctions are explicit. Creator credits remain unconfirmed; permission does not grant unrelated reuse. See `public/projects/README.md` and `PROJECT_TEMPLATE.md` for replacements. Do not hotlink external imagery. Self-hosted Inter supports Mongolian Ө/Ү and retains its OFL licence.
 
-The engineering viewer is optional and not mounted in the photographic homepage. Retain the static engineering presentation unless a replacement reaches the approved visual quality. Dormant viewer source is not proof of a delivered interactive feature.
+## Contact and search
 
-## Validation
+The contact form opens a mailto draft; it does not send or store messages. GitHub Pages has no backend. A future endpoint requires an explicit implementation with error/progress states; setting a URL alone is not a complete integration. No CMS, analytics, database, authentication or paid assets are configured.
 
-## Search appearance
+The MN homepage title remains “Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК”. Company aliases appear in appropriate visible copy and WebSite/ProfessionalService data. Preserve `public/google9a26a91e934cf80c.html`: Search Console ownership was verified and MN/EN indexing was requested on 2026-10-02. Sitemap submission reported “Couldn't fetch” despite direct HTTP/XML checks; successful Google processing remains unconfirmed. Google selects displayed titles and search positions; this implementation makes no indexing/ranking promise.
 
-The Mongolian homepage title is “Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК”; it uses an absolute title to avoid repeating the company suffix. The root includes WebSite structured data with the company name. Google decides the displayed title and site name after crawling. Its site-name feature does not support the `/gbet.mn/` subdirectory on GitHub Pages; a dedicated domain or subdomain is needed for a separately recognized site name. After connecting an owned domain, verify it in Google Search Console, submit the sitemap, and request indexing for the homepage. No ownership verification or indexing submission has been performed by this repository.
+## Compatibility and migration
 
-Local static validation: 34 localized routes, filters, locale switching, form validation, skip link, menu keyboard operation, reduced motion, 320/390/768/1440 widths and 200% text enlargement passed; no page errors or failed asset requests. Production build, lint and TypeScript checks are required on each deployment. These checks are not a WCAG certification or field Core Web Vitals guarantee.
+Vinext beta.5, plugin-rsc 0.5.26, React 19.2.6 and the established export adapter remain the design baseline. Unused UI/database/3D dependencies were removed after the initial design passed its checks. Framework/security upgrades are tested in a separate branch/PR. Registry availability and a passing build do not demonstrate static-export compatibility. Never use `--force` or `--legacy-peer-deps` to conceal dependency conflicts.
 
-The deployed GitHub Pages site uses `https://gbet.mn`. The workflow sets `GBET_PUBLIC_ORIGIN=https://gbet.mn`, which selects root asset paths, canonical URLs, sitemap and an exported CNAME. Set this variable locally when testing the custom-domain build. Without it, the adapter still supports repository-prefixed GitHub Pages builds. DNS and repository Pages settings must agree with the build origin; changing DNS alone is insufficient. No database migration is involved.
+Vinext's native basePath/trailingSlash settings did not export this application correctly. Keep `scripts/finalize-pages.mjs`: it converts flat HTML into route/index.html, preserves the Google verification file, and creates static metadata. Removing it requires explicit replacement tests for custom domain, repository prefix, redirects, direct detail links, images/CSS/fonts and invalid routes.
+
+Native Next App Router migration requires reviewing injected path constants, anchor/basePath handling, locale selection, metadata/static handlers and export output. Compatibility with Next/Vercel is not guaranteed. No database migration is needed.
+
+Deploy by merging a tested change into main. Roll back by reverting its merge commit; keep the previous live SHA in the handoff record. Source PDFs and all private provenance, personnel and draft records remain outside the repository and deployment.
