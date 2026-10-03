@@ -1,6 +1,8 @@
 import { asset } from "../../lib/paths";
 import Link from "../../lib/link";
-import { ProjectCard } from "../../components/projects";
+import { ProjectFeature } from "../../components/projects";
+import { TeamSection } from "../../components/team";
+import { media } from "../../content/media";
 import {
   SectionHeading,
   ExpertiseGrid,
@@ -28,48 +30,51 @@ export default async function Home({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale: l } = await params;
+  const hero = media["ikh-tamir"];
   return (
     <main id="main" className="portfolio-home">
+      <link rel="preload" as="image" href={asset(hero.mobileSrc || hero.src)} media="(max-width: 640px)" fetchPriority="high" />
+      <link rel="preload" as="image" href={asset(hero.src)} media="(min-width: 641px)" fetchPriority="high" />
       <section className="image-hero">
         <picture>
           <source
             media="(max-width: 640px)"
-            srcSet={asset("/projects/ikh-tamir-mobile.webp")} 
+            srcSet={asset(hero.mobileSrc || hero.src)}
           />
           <img
             className="hero-photograph"
-            src={asset("/projects/ikh-tamir.webp")} 
-            alt={
-              l === "mn"
-                ? "Их Тамирын голын төмөрбетон гүүр"
-                : "Reinforced concrete bridge over the Ikh Tamir River"
-            }
-            width="1846"
-            height="1153"
+            src={asset(hero.src)}
+            alt={hero.alt[l]}
+            width={hero.width}
+            height={hero.height}
             fetchPriority="high"
           />
         </picture>
         <div className="hero-shade" aria-hidden="true" />
         <div className="hero-editorial">
-          <p className="eyebrow">GBET / CONSULTING ENGINEERS</p>
+          <p className="eyebrow"><span className="hero-rule" aria-hidden="true" />{l === "mn" ? "МОНГОЛ УЛС / ГҮҮРИЙН ЗУРАГ ТӨСӨЛ" : "MONGOLIA / BRIDGE DESIGN"}</p>
           <h1>
             {l === "mn"
-              ? "Гүүрээр\nхолбогдох Монгол."
-              : "Engineering\nconnections."}
+              ? "Гүүрийн\nинженерчлэл."
+              : "Bridge\nengineering."}
           </h1>
           <Link className="hero-project-link" href={`/${l}/projects`}>
             {l === "mn" ? "Бидний төслүүд" : "Discover our work"}
             <span aria-hidden="true">↗</span>
           </Link>
         </div>
+        <div className="hero-side-note" aria-hidden="true">GBET / CONSULTING ENGINEERS</div>
         <div className="hero-caption">
-          <Link href={`/${l}/projects/ikh-tamir`}>
+          <Link href={`/${l}/projects/ikh-tamir`} className="hero-location-link">
+            <span className="hero-location-index" aria-hidden="true">01 /</span>
+            <span>
             {l === "mn" ? "Их Тамирын голын гүүр" : "Ikh Tamir River Bridge"}
             <small>
               {l === "mn"
                 ? "Архангай · Батцэнгэл / 198 м"
                 : "Battsengel · Arkhangai / 198 m"}
             </small>
+            </span>
           </Link>
           <a href="#introduction" className="scroll-cue">
             {l === "mn" ? "Доош үзэх" : "Scroll to explore"}{" "}
@@ -99,7 +104,7 @@ export default async function Home({
       <section className="section selected-work" id="selected-work">
         <div className="work-heading">
           <p className="eyebrow">
-            {l === "mn" ? "СОНГОСОН ТӨСЛҮҮД" : "SELECTED PROJECTS"}
+            02 / {l === "mn" ? "СОНГОСОН ТӨСЛҮҮД" : "SELECTED PROJECTS"}
           </p>
           <h2>{l === "mn" ? "Бидний ажил." : "Our work."}</h2>
           <Link className="text-link" href={`/${l}/projects`}>
@@ -109,8 +114,8 @@ export default async function Home({
         <div className="featured-projects">
           {projects
             .filter((p) => p.featured)
-            .map((p) => (
-              <ProjectCard key={p.slug} project={p} locale={l} />
+            .map((p, index) => (
+              <ProjectFeature key={p.slug} project={p} locale={l} index={index} />
             ))}
         </div>
       </section>
@@ -157,6 +162,7 @@ export default async function Home({
           </Link>
         </div>
       </section>
+      <TeamSection locale={l} />
       <section className="section credentials-history">
         <SectionHeading
           number="06"

@@ -1,5 +1,7 @@
 import Link from "../lib/link";
 import { categories, ui, type Locale, type Project } from "../content/site";
+import { media } from "../content/media";
+import { asset } from "../lib/paths";
 export function ProjectImage({
   project,
   locale,
@@ -7,14 +9,29 @@ export function ProjectImage({
   project: Project;
   locale: Locale;
 }) {
-  const image = project.image;
+  const registered = media[project.slug];
+  const image = registered
+    ? {
+        src: asset(registered.src),
+        alt: registered.alt,
+        kind: registered.kind,
+        usageApproved: registered.usageApproved,
+      }
+    : project.image;
   return (
     <div
       className={`project-image ${image?.usageApproved ? "has-photo" : "awaiting-photo"} ${project.category}`}
     >
       {image?.usageApproved ? (
         <>
-          <img src={image.src} alt={image.alt[locale]} loading="lazy" />
+          <img
+            src={image.src}
+            alt={image.alt[locale]}
+            loading="lazy"
+            width={registered?.width || 1320}
+            height={registered?.height || 824}
+            style={{ objectPosition: registered?.position || "center" }}
+          />
           <span className="photo-kind">
             {image.kind === "rendering"
               ? locale === "mn"
@@ -38,6 +55,56 @@ export function ProjectImage({
         </>
       )}
     </div>
+  );
+}
+
+export function ProjectFeature({
+  project,
+  locale,
+  index,
+}: {
+  project: Project;
+  locale: Locale;
+  index: number;
+}) {
+  return (
+    <article className={`project-feature feature-${index + 1}`}>
+      <Link
+        className="feature-image-link"
+        href={`/${locale}/projects/${project.slug}`}
+        aria-label={project.name[locale]}
+      >
+        <ProjectImage project={project} locale={locale} />
+        <span className="feature-arrow" aria-hidden="true">
+          ↗
+        </span>
+      </Link>
+      <div className="feature-caption">
+        <span className="feature-number" aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <div>
+          <p className="eyebrow">{categories[project.category][locale]}</p>
+          <h3>
+            <Link href={`/${locale}/projects/${project.slug}`}>
+              {project.name[locale]}
+            </Link>
+          </h3>
+          <p className="feature-location">
+            {project.location[locale]}
+            {project.year ? ` / ${project.year}` : ""}
+          </p>
+        </div>
+        <div className="feature-description">
+          <p>{project.summary[locale]}</p>
+          <div className="feature-facts">
+            {project.length && <span>{project.length}</span>}
+            {project.bridgeType && <span>{project.bridgeType[locale]}</span>}
+            {project.role && <span>{project.role[locale]}</span>}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
 export function ProjectCard({

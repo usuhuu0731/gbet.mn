@@ -30,6 +30,7 @@ export const nav = [
   { path: "expertise", name: text("Үйлчилгээ", "Expertise") },
   { path: "projects", name: text("Төслүүд", "Projects") },
   { path: "innovation", name: text("Инженерчлэл", "Engineering") },
+  { path: "team", name: text("Манай баг", "Our people") },
   { path: "news", name: text("Мэдээ", "Insights") },
   { path: "careers", name: text("Карьер", "Careers") },
   { path: "contact", name: text("Холбоо барих", "Contact") },

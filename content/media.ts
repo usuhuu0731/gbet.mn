@@ -1,0 +1,59 @@
+import { text, type Localized } from "./site";
+
+export interface MediaAsset {
+  src: string;
+  mobileSrc?: string;
+  width: number;
+  height: number;
+  kind: "photograph" | "rendering" | "portrait" | "concept";
+  alt: Localized;
+  position: string;
+  mobilePosition?: string;
+  source: string;
+  usageApproved: boolean;
+}
+
+// Paths are relative to public/. Portrait permission is independent of name/role approval.
+export const media: Record<string, MediaAsset> = {
+  "ikh-tamir": {
+    src: "/projects/ikh-tamir.webp",
+    mobileSrc: "/projects/ikh-tamir-mobile.webp",
+    width: 1846,
+    height: 1153,
+    kind: "photograph",
+    position: "center 54%",
+    mobilePosition: "63% center",
+    alt: text(
+      "Их Тамирын голын төмөрбетон гүүр",
+      "Reinforced concrete bridge over the Ikh Tamir River",
+    ),
+    source: "Client-supplied portfolio, page 22",
+    usageApproved: true,
+  },
+  sonsgolon: {
+    src: "/projects/sonsgolon-render.webp",
+    width: 1336,
+    height: 662,
+    kind: "rendering",
+    position: "center",
+    alt: text(
+      "Сонсголонгийн гүүрийн зураг төслийн дүрслэл",
+      "Design rendering of Sonsgolon Bridge",
+    ),
+    source: "Client-supplied portfolio, page 4",
+    usageApproved: true,
+  },
+  "tavantolgoi-zuunbayan": {
+    src: "/projects/railway-construction.webp",
+    width: 1320,
+    height: 824,
+    kind: "photograph",
+    position: "center",
+    alt: text(
+      "Тавантолгой–Зүүнбаян төмөр замын гүүрийн барилгын үе",
+      "Railway bridge construction on the Tavantolgoi–Zuunbayan route",
+    ),
+    source: "Client-supplied portfolio, page 32",
+    usageApproved: true,
+  },
+};

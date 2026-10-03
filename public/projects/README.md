@@ -4,6 +4,8 @@ Place approved photographs, renders and drawings under `<project-slug>/`, for ex
 
 Update the corresponding record in `content/site.ts` with local src, original source, copyrightOwner, usageApproved=true and accurate MN/EN alt text. An approval flag is a publication decision, not a copyright determination. Retain written permission privately. Do not hotlink or download news photos on the assumption that public availability grants reuse.
 
+The current display uses `content/media.ts` as the central asset registry. Keep it synchronized with the project reference; register measured dimensions, crop position and mobile source here. Replacing a registered asset does not require editing page layouts. Staff portrait publication needs a separate approval and `kind: 'portrait'`; see `PROJECT_TEMPLATE.md`.
+
 Unapproved/absent images render clear placeholders. PDF/PNG drawing thumbnails may be added here after approval; no private drawing upload or viewer endpoint exists in v1.
 
 ## Approved v1 imagery (2026-10-02)
