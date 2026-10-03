@@ -6,15 +6,25 @@ Create a stable slug in `content/site.ts` and supply MN/EN name, location and su
 
 Keep claim-by-claim evidence, dates, contradictions and publication decisions in the private review folder outside this repository. Do not put confidential evidence in JSON, public assets, disabled frontend objects or source commits. Existing founding-year and Naadamchid measurement conflicts remain unpublished.
 
-Register approved imagery in `content/media.ts` under the project slug: public-relative path, measured width/height, photograph/rendering/concept kind, MN/EN alt text and crop position. Preserve the matching project's image record for its source/type reference. Keep concepts separate from actual project records. New image files require explicit rights for this website; never hotlink or copy reference-site pictures.
+Register approved imagery in `content/media-sources.json` under the project slug: public-relative path, measured width/height, photograph/rendering/concept kind, MN/EN alt text and crop position. Preserve the matching project's image record for its source/type reference. Keep concepts separate from actual project records. New image files require explicit rights for this website; never hotlink or copy reference-site pictures.
 
-Use WebP with enough source pixels for its display. For a full-height mobile hero, check the cropped region's effective resolution rather than choosing a source by width alone. The current hero retains its original source on phones because the smaller 900×562 derivative visibly upscaled; an authorized portrait crop can later reduce bytes while retaining detail. Check crop at 320/390/768/1440 widths. Run `npm run build` and `npm run check:site` after replacing assets.
+Keep adequate original pixels and the correct EXIF orientation. Register the actual oriented width/height, bilingual alt/caption, `position` and optional `mobilePosition`, quality and website approval. Portrait variants use 320/480/640px; project variants use 480/768/1024/1440/1920px capped at original width. Sharp never enlarges sources. Existing source bytes remain unchanged; derivatives, cache and manifests are generated before build/QA.
+
+The phone hero is 4:3 and does not reuse the obsolete full-height crop. Check its main bridge structure at 320/390/768/1440 widths and higher device pixel ratios. Review colors and fine concrete/steel detail before reducing an individual image's quality. A new source needs permission before entering public/ or this public repository.
+
+## Case study blocks
+
+`Project.caseStudy` is optional. The discriminated union in `content/case-study.ts` supports `text` (`body`, optional `title`), `image`/`diagram` (`mediaId`, optional `caption`), `gallery` (`mediaIds`, optional `title`), `facts` (localized label/value items), and `relatedProjects` (`slugs`). Keep only publication-ready blocks in this data; no draft flags or unreviewed hidden text. Missing fields/sections are omitted. Without custom blocks, the detail uses its existing summary and related projects, with a facts rail and the initial image above them.
+
+Gallery IDs must refer to approved media from that project. One approved photograph is enough for a useful zoom dialog; never duplicate it to imply a larger gallery or substitute another bridge. The dialog has close/Escape, keyboard previous/next for multiple images, captions, native focus containment and focus return. A new gallery should be exercised with keyboard and touch after entry.
+
+OG previews use approved imagery and the supplied `ogTitle.mn/en` (explicit line breaks are supported). Use a source at least 1200×630 for this compositor; images without an OG entry use the brand fallback. Do not fabricate photographer credits or put private provenance in captions.
 
 ## Team
 
 Add only approved current staff to `content/team.ts`, with stable id, MN/EN professional name and role. Preserve supplied spelling until a Latin version is confirmed. Biographies are optional and must be reviewed.
 
-Portraits: get separate website-publication permission, place the image in `public/team/`, register it in `content/media.ts` with kind `portrait`, and set `portraitId` on the member. Use a 4:5 portrait, consistent neutral background and reviewed alt text. Update dimensions from the actual file. Missing/unapproved portraits use the graphite placeholder automatically. Source identity/diploma scans never belong in public/team.
+Portraits: get separate website-publication permission, place the image in `public/team/`, register it in `content/media-sources.json` with kind `portrait`, and set `portraitId` on the member. Use the supplied portrait with a reviewed 4:5 crop and accurate alt text; do not synthesize identities or alter the image to force a neutral background. Update dimensions from the actual file. Missing/unapproved portraits use the graphite placeholder automatically. Source identity/diploma scans never belong in public/team.
 
 Keep images awaiting permission outside this repository and public/. A false display flag does not protect a publicly served file.
 
@@ -26,4 +36,4 @@ The message is a publication-approved company statement, not an invented quotati
 
 The current mailto transport cannot report delivery. Implement and test a backend separately before connecting an endpoint. Document payload handling, errors, progress and privacy; GitHub Pages itself cannot receive submissions.
 
-Keep the domain origin, Pages settings and CNAME consistent. Preserve the Google verification file. Validate existing and new routes, filters, locale switching, form states, keyboard, axe, reduced motion, 200% text and image loading. Update the route-count assertion if intentionally adding/removing a page. No database migration is required.
+Keep the domain origin, Pages settings and CNAME consistent. Preserve the Google verification file. Validate existing and new routes, filters, locale switching, form states, keyboard, axe, reduced motion, 200% text and image loading. The route check derives its expected set from authored content; verify both custom-domain and repository-prefix exports when adding/removing a route. Use stable `locationId` and `statusId` values shared across languages. No database migration is required.

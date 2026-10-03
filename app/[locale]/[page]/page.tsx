@@ -1,4 +1,4 @@
-import { asset } from "../../../lib/paths";
+import { MediaImage } from "../../../components/media-image";
 import { media } from "../../../content/media";
 import { notFound } from "next/navigation";
 import Link from "../../../lib/link";
@@ -78,8 +78,8 @@ export default async function ContentPage({
     ),
   };
   return (
-    <main id="main">
-      <section className="page-heading">
+    <main id="main" className={`content-page page-${page}`}>
+      <section className={`page-heading heading-${page}`}>
         <p className="eyebrow">GBET / {n.name[l]}</p>
         <h1>{titles[page][l]}</h1>
         {["about", "expertise"].includes(page) && <p>{site.description[l]}</p>}
@@ -200,13 +200,7 @@ export default async function ContentPage({
             />
             {engineeringImage.usageApproved && (
               <figure className="engineering-photo">
-                <img
-                  src={asset(engineeringImage.src)}
-                  alt={engineeringImage.alt[l]}
-                  width={engineeringImage.width}
-                  height={engineeringImage.height}
-                  style={{ objectPosition: engineeringImage.position }}
-                />
+                <MediaImage id="tavantolgoi-zuunbayan" locale={l} priority />
                 <figcaption>
                   {l === "mn"
                     ? "Тавантолгой–Зүүнбаян · Компанийн танилцуулгын гэрэл зураг"

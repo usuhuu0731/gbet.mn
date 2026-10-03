@@ -7,7 +7,6 @@ import { gzip } from "node:zlib";
 import { promisify } from "node:util";
 const compress = promisify(gzip);
 
-const root = path.resolve("site");
 const mime = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
@@ -23,6 +22,7 @@ const mime = {
   ".webmanifest": "application/manifest+json",
 };
 export function createStaticServer() {
+  const root = path.resolve(process.env.QA_SITE_DIR || "site");
   return createServer(async (req, res) => {
     try {
       const url = new URL(req.url, "http://localhost");
@@ -42,7 +42,7 @@ export function createStaticServer() {
       const info = await stat(file);
       if (info.isDirectory()) {
         if (!url.pathname.endsWith("/")) {
-          res.writeHead(301, { Location: url.pathname + "/" });
+          res.writeHead(301, { Location: url.pathname + "/" + url.search });
           res.end();
           return;
         }

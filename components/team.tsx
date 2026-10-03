@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { team, directorMessage, type TeamMember } from "../content/team";
 import { media } from "../content/media";
 import type { Locale } from "../content/site";
-import { asset } from "../lib/paths";
+import { MediaImage } from "./media-image";
 import Link from "../lib/link";
 
 export function TeamPortrait({
@@ -18,13 +18,10 @@ export function TeamPortrait({
   if (portrait?.kind === "portrait" && portrait.usageApproved) {
     return (
       <div className="team-portrait">
-        <img
-          src={asset(portrait.src)}
-          alt={portrait.alt[locale]}
-          width={portrait.width}
-          height={portrait.height}
-          loading="lazy"
-          style={{ objectPosition: portrait.position }}
+        <MediaImage
+          id={portrait.id}
+          locale={locale}
+          sizes="(max-width: 479px) 90vw, (max-width: 900px) 43vw, 29vw"
         />
       </div>
     );
@@ -65,13 +62,17 @@ export function TeamGrid({
   preview?: boolean;
 }) {
   const members = preview ? team.slice(0, 3) : team;
+  const Heading = preview ? "h3" : "h2";
   return (
     <div className={`team-grid ${preview ? "team-preview-grid" : ""}`}>
       {members.map((member, index) => (
         <article className="team-profile" id={member.id} key={member.id}>
           <TeamPortrait member={member} locale={locale} index={index} />
           <div className="team-profile-copy">
-            <h3>{member.name[locale]}</h3>
+            <span className="profile-index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <Heading>{member.name[locale]}</Heading>
             <p>{member.role[locale]}</p>
             {member.biography && (
               <p className="team-biography">{member.biography[locale]}</p>

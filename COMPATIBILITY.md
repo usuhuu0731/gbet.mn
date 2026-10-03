@@ -37,3 +37,11 @@ The mobile LCP target of 2500 ms is not met. Desktop candidate LCP was 552 ms an
 No database migration is needed. The adapter remains required for flat HTML conversion, trailing slashes and repository prefixes. A passing build alone is insufficient grounds to remove it. This validation applies to this static application, not universal Next.js/Vercel compatibility.
 
 The prior deployed design merge is `454da055c7705c603478bcfabad96824b8adb9ec`. Revert the compatibility merge and run the same checks to restore its lockfile. The pre-redesign baseline is `31b2cd7a72dca12469d8b9052d790880e265e0c6`.
+
+## Editorial refresh on the established lockfile
+
+The current local `design/editorial-redesign` branch starts from `0fa7805111ac50715749dfc5287184dfafc1bb0e`. Vinext, React, Vite, RSC and Next versions are unchanged. Sharp 0.35.4 is now explicitly declared as a development dependency; it was already present transitively. The lockfile change does not upgrade the dependency graph. The npm installation during this refresh reported 24 findings (2 low, 8 moderate, 14 high); this is a later registry audit observation, not the historical upgrade result above. No automatic audit fixes or forced peer resolution were applied.
+
+The export adapter remains. Current route/filter/media checks are recorded in local `outputs/`; current measurements belong in `PERFORMANCE.md`. Preserve private records outside this public repository. No database, backend or hosting migration is introduced. This branch is not deployed. Review local changes against the starting commit; discard only individually reviewed files or revert a future review commit to roll back, without reset/clean or touching user scripts.
+
+The final editorial checks pass both origins with 36 authored localized routes and 13 axe cases per origin. Source preservation, EXIF removal and responsive variants pass for all nine approved assets. See `REDESIGN_REVIEW.md` for the current review evidence and checks not performed.

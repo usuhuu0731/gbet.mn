@@ -1,7 +1,8 @@
 import { asset, basePath } from "../../lib/paths";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SiteHeader, SiteFooter } from "../../components/chrome";
+import { SiteHeader } from "../../components/chrome";
+import { SiteFooter } from "../../components/footer";
 import { site, locales, type Locale } from "../../content/site";
 import "../globals.css";
 export async function generateMetadata({
@@ -32,7 +33,7 @@ export default async function LocaleLayout({
   return (
     <html lang={l}>
       <head>
-        <link rel="stylesheet" href={asset("/fonts/inter.css")}  />
+        <link rel="stylesheet" href={asset("/fonts/inter.css")} />
         <link
           rel="preload"
           href={`${basePath}/fonts/inter-${l === "mn" ? "cyrillic" : "latin"}-400-normal.woff2`}
@@ -40,7 +41,15 @@ export default async function LocaleLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {l === "mn" && <link rel="preload" href={`${basePath}/fonts/inter-cyrillic-ext-400-normal.woff2`} as="font" type="font/woff2" crossOrigin="anonymous" />}
+        {l === "mn" && (
+          <link
+            rel="preload"
+            href={`${basePath}/fonts/inter-cyrillic-ext-400-normal.woff2`}
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body>
         <a className="skip" href="#main">

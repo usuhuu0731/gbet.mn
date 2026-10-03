@@ -6,3 +6,6 @@ outputs/
 .env*
 site/
 .next/
+.cache/
+public/generated/
+content/generated-media.json

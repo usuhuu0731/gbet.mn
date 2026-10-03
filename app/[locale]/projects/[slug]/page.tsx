@@ -7,6 +7,10 @@ import {
   text,
   type Locale,
 } from "../../../../content/site";
+import { CaseStudy } from "../../../../components/case-study";
+import { ImageGallery } from "../../../../components/image-gallery";
+import { projectBlocks } from "../../../../content/case-study";
+import { media } from "../../../../content/media";
 import { ProjectImage } from "../../../../components/projects";
 import { ContactCTA } from "../../../../components/sections";
 import { pageMetadata } from "../../../../lib/metadata";
@@ -23,6 +27,7 @@ export async function generateMetadata({
     `projects/${slug}`,
     p?.name[locale] || "GBET",
     p?.summary[locale],
+    media[slug]?.og?.[locale]?.src,
   );
 }
 export default async function Detail({
@@ -33,7 +38,11 @@ export default async function Detail({
   const { locale: l, slug } = await params;
   const p = projects.find((p) => p.slug === slug);
   if (!p) notFound();
-  const nextProject = projects[(projects.findIndex(project => project.slug === slug) + 1) % projects.length];
+  const nextProject =
+    projects[
+      (projects.findIndex((project) => project.slug === slug) + 1) %
+        projects.length
+    ];
   const facts = [
     [text("Захиалагч", "Client"), p.client?.[l]],
     [text("ГБЭТ-ийн үүрэг", "GBET role"), p.role?.[l]],
@@ -43,17 +52,9 @@ export default async function Detail({
     [text("Бүтцийн төрөл", "Structure type"), p.bridgeType?.[l]],
     [text("Үйлчилгээ", "Services"), categories[p.category][l]],
   ];
-  const sections = [
-    text("Сорилт", "Challenge"),
-    text("Инженерийн аргачлал", "Engineering approach"),
-    text("Бүтцийн концепц", "Structural concept"),
-    text("Гүйцэтгэл", "Delivery"),
-    text("Үр дүн", "Outcome"),
-    text("Галерей ба зураг", "Gallery & drawings"),
-  ];
   return (
     <main id="main">
-      <section className="page-heading">
+      <section className="page-heading detail-heading">
         <nav
           className="breadcrumbs"
           aria-label={l === "mn" ? "Хуудасны зам" : "Breadcrumb"}
@@ -71,7 +72,16 @@ export default async function Detail({
         <h1>{p.name[l]}</h1>
       </section>
       <section className="detail-hero">
-        <ProjectImage project={p} locale={l} />
+        {media[p.slug]?.usageApproved ? (
+          <ImageGallery ids={[p.slug]} locale={l}>
+            <ProjectImage project={p} locale={l} priority />
+          </ImageGallery>
+        ) : (
+          <ProjectImage project={p} locale={l} priority />
+        )}
+        {media[p.slug]?.usageApproved && (
+          <p className="detail-caption">{media[p.slug].caption[l]}</p>
+        )}
       </section>
       <section className="section project-detail">
         <aside>
@@ -100,26 +110,23 @@ export default async function Detail({
           )}
           <p className="small">{p.sourceNote[l]}</p>
         </aside>
-        <div>
-          <p className="project-summary">{p.summary[l]}</p>
-          {sections.map((s, i) => (
-            <section className="case-section" key={i}>
-              <span className="section-number">0{i + 1}</span>
-              <h2>{s[l]}</h2>
-              {i !== 5 && <p>{ui.pending[l]}</p>}
-              {i === 5 && p.image?.usageApproved && <ProjectImage project={p} locale={l} />}
-              {i === 5 && !p.image?.usageApproved && (
-                <div className="drawing-empty">
-                  {l === "mn"
-                    ? "Баталгаажсан зураг, гэрэл зураг болон техникийн материал нэмэх хэсэг."
-                    : "Reserved for approved photographs, drawings and technical material."}
-                </div>
-              )}
-            </section>
-          ))}
-        </div>
+        <CaseStudy blocks={projectBlocks(p, projects)} locale={l} />
       </section>
-      <section className="case-next"><div><p className="eyebrow">{l === "mn" ? "ДАРААГИЙН ТӨСӨЛ" : "NEXT PROJECT"}</p><h2><Link href={`/${l}/projects/${nextProject.slug}`}>{nextProject.name[l]}</Link></h2></div><Link className="text-link" href={`/${l}/projects/${nextProject.slug}`}>{l === "mn" ? "Үзэх" : "Explore"} <span aria-hidden="true">↗</span></Link></section>
+      <section className="case-next">
+        <div>
+          <p className="eyebrow">
+            {l === "mn" ? "ДАРААГИЙН ТӨСӨЛ" : "NEXT PROJECT"}
+          </p>
+          <h2>
+            <Link href={`/${l}/projects/${nextProject.slug}`}>
+              {nextProject.name[l]}
+            </Link>
+          </h2>
+        </div>
+        <Link className="text-link" href={`/${l}/projects/${nextProject.slug}`}>
+          {l === "mn" ? "Үзэх" : "Explore"} <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
       <ContactCTA locale={l} />
       <StructuredData locale={l} path={`projects/${slug}`} title={p.name[l]} />
     </main>
@@ -127,4 +134,8 @@ export default async function Detail({
 }
 
 export const dynamicParams = false;
-export function generateStaticParams() { return ["mn", "en"].flatMap(locale => projects.map(p => ({locale,slug:p.slug}))); }
+export function generateStaticParams() {
+  return ["mn", "en"].flatMap((locale) =>
+    projects.map((p) => ({ locale, slug: p.slug })),
+  );
+}

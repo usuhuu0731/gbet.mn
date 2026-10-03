@@ -1,0 +1,177 @@
+{
+  "portrait-erkhembayar": {
+    "src": "/team/erkhembayar.jpg",
+    "width": 1066,
+    "height": 1280,
+    "kind": "portrait",
+    "position": "center",
+    "alt": {
+      "mn": "Б. Эрхэмбаярын хөрөг",
+      "en": "Portrait of Б. Эрхэмбаяр"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Б. Эрхэмбаярын хөрөг",
+      "en": "Portrait of Б. Эрхэмбаяр"
+    },
+    "quality": 88
+  },
+  "portrait-todgerel": {
+    "src": "/team/todgerel.jpg",
+    "width": 960,
+    "height": 1280,
+    "kind": "portrait",
+    "position": "center 20%",
+    "alt": {
+      "mn": "Э. Тодгэрэлийн хөрөг",
+      "en": "Portrait of Э. Тодгэрэл"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Э. Тодгэрэлийн хөрөг",
+      "en": "Portrait of Э. Тодгэрэл"
+    },
+    "quality": 88
+  },
+  "portrait-baigal": {
+    "src": "/team/baigal.jpg",
+    "width": 853,
+    "height": 1280,
+    "kind": "portrait",
+    "position": "center 16%",
+    "alt": {
+      "mn": "Э. Байгалын хөрөг",
+      "en": "Portrait of Э. Байгал"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Э. Байгалын хөрөг",
+      "en": "Portrait of Э. Байгал"
+    },
+    "quality": 88
+  },
+  "portrait-mendsaikhan": {
+    "src": "/team/mendsaikhan.jpg",
+    "width": 1280,
+    "height": 960,
+    "kind": "portrait",
+    "position": "65% center",
+    "alt": {
+      "mn": "М. Мэндсайханы хөрөг",
+      "en": "Portrait of М. Мэндсайхан"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "М. Мэндсайханы хөрөг",
+      "en": "Portrait of М. Мэндсайхан"
+    },
+    "quality": 88
+  },
+  "portrait-purevdagva": {
+    "src": "/team/purevdagva.jpg",
+    "width": 1024,
+    "height": 1280,
+    "kind": "portrait",
+    "position": "center",
+    "alt": {
+      "mn": "Ж. Пүрэвдагвын хөрөг",
+      "en": "Portrait of Ж. Пүрэвдагва"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Ж. Пүрэвдагвын хөрөг",
+      "en": "Portrait of Ж. Пүрэвдагва"
+    },
+    "quality": 88
+  },
+  "portrait-usukhbayar": {
+    "src": "/team/usukhbayar.jpg",
+    "width": 947,
+    "height": 1280,
+    "kind": "portrait",
+    "position": "center top",
+    "alt": {
+      "mn": "С. Өсөхбаярын хөрөг",
+      "en": "Portrait of С. Өсөхбаяр"
+    },
+    "source": "Company-supplied staff image",
+    "usageApproved": true,
+    "caption": {
+      "mn": "С. Өсөхбаярын хөрөг",
+      "en": "Portrait of С. Өсөхбаяр"
+    },
+    "quality": 88
+  },
+  "ikh-tamir": {
+    "src": "/projects/ikh-tamir.webp",
+    "width": 1846,
+    "height": 1153,
+    "kind": "photograph",
+    "position": "center 54%",
+    "mobilePosition": "63% center",
+    "alt": {
+      "mn": "Их Тамирын голын төмөрбетон гүүр",
+      "en": "Reinforced concrete bridge over the Ikh Tamir River"
+    },
+    "source": "Client-supplied portfolio, page 22",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Их Тамирын голын төмөрбетон гүүр",
+      "en": "Reinforced concrete bridge over the Ikh Tamir River"
+    },
+    "quality": 86,
+    "ogTitle": {
+      "mn": "Их Тамирын голын гүүр",
+      "en": "Ikh Tamir River Bridge"
+    }
+  },
+  "sonsgolon": {
+    "src": "/projects/sonsgolon-render.webp",
+    "width": 1336,
+    "height": 662,
+    "kind": "rendering",
+    "position": "center",
+    "alt": {
+      "mn": "Сонсголонгийн гүүрийн зураг төслийн дүрслэл",
+      "en": "Design rendering of Sonsgolon Bridge"
+    },
+    "source": "Client-supplied portfolio, page 4",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Сонсголонгийн гүүрийн зураг төслийн дүрслэл",
+      "en": "Design rendering of Sonsgolon Bridge"
+    },
+    "quality": 90,
+    "ogTitle": {
+      "mn": "Сонсголонгийн гүүр",
+      "en": "Sonsgolon Bridge"
+    }
+  },
+  "tavantolgoi-zuunbayan": {
+    "src": "/projects/railway-construction.webp",
+    "width": 1320,
+    "height": 824,
+    "kind": "photograph",
+    "position": "center",
+    "alt": {
+      "mn": "Тавантолгой–Зүүнбаян төмөр замын гүүрийн барилгын үе",
+      "en": "Railway bridge construction on the Tavantolgoi–Zuunbayan route"
+    },
+    "source": "Client-supplied portfolio, page 32",
+    "usageApproved": true,
+    "caption": {
+      "mn": "Тавантолгой–Зүүнбаян төмөр замын гүүрийн барилгын үе",
+      "en": "Railway bridge construction on the Tavantolgoi–Zuunbayan route"
+    },
+    "quality": 86,
+    "ogTitle": {
+      "mn": "Тавантолгой–Зүүнбаян\nтөмөр замын гүүрүүд",
+      "en": "Tavantolgoi–Zuunbayan\nrailway bridges"
+    }
+  }
+}

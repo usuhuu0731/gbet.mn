@@ -11,10 +11,11 @@ npm ci
 export GBET_REPOSITORY=usuhuu0731/gbet.mn
 export GBET_PUBLIC_ORIGIN=https://gbet.mn
 npm run lint
-npx tsc --noEmit
+npm run typecheck
 npm run build
 npx playwright install chromium
 npm run check:site
+npm run check:zoom
 node scripts/serve-static.mjs
 ```
 
@@ -22,21 +23,21 @@ PowerShell uses `$env:GBET_REPOSITORY='usuhuu0731/gbet.mn'` and `$env:GBET_PUBLI
 
 Without `GBET_PUBLIC_ORIGIN`, repository-prefixed GitHub Pages export remains supported. Build and test with the same configuration. Never change domain DNS without matching the Pages settings and exported origin. `CNAME`, canonical, hreflang, robots, sitemap and manifest derive from this configuration.
 
-The workflow validates pull requests, and deploys successful main/manual builds. Checks include 36 localized routes, six staff members, filters, locale preservation, mailto form validation, keyboard navigation, reduced motion, responsive widths, 200% text enlargement, private artifact exclusions and automated axe checks. Screenshots/reports are CI artifacts, not public website assets. These checks are not a full WCAG certification or field Core Web Vitals guarantee.
+The workflow validates pull requests, and deploys successful main/manual builds. Checks compare authored locale/page/project routes against the full export, six staff members, filters, locale preservation, mailto form validation, keyboard navigation, reduced motion, responsive widths, 200% text enlargement, emulated 200% layout/pixel density, private artifact exclusions and automated axe checks. Screenshots/reports are CI artifacts, not public website assets. These checks are not a full WCAG certification or field Core Web Vitals guarantee.
 
-Client-only controls are disabled until hydration can handle the first action. A delayed-script test exercises this behavior. Browser QA waits for the document and actual UI/image readiness; unrelated long-polling is not a readiness signal. Latest measured performance and its limitations are in [PERFORMANCE.md](PERFORMANCE.md).
+Client-only controls are disabled until hydration can handle the first action. Home headings, images, CTAs, footer navigation and the complete initial project list remain in exported HTML. A delayed-script test exercises this behavior. Browser QA waits for the document and actual UI/image readiness; unrelated long-polling is not a readiness signal. Latest measured performance and its limitations are in [PERFORMANCE.md](PERFORMANCE.md).
 
 ## Visual and content system
 
-The Korean BANDI website is the primary design reference for large engineering imagery, editorial hierarchy, whitespace and restrained interaction. sbp/Arup inform information relationships only. No reference code, photography or copy is reused. `app/globals.css` is one coherent responsive layout system, replacing the previous stack of overrides. Initial hero, featured project and staff layouts must be reviewed at desktop/mobile sizes before extending the design.
+The [Korean BANDI website](https://bandiconsult.com/index.php) is the primary design reference for large engineering imagery, editorial hierarchy, whitespace and restrained interaction. sbp/Arup inform information relationships only. No reference code, photography or copy is reused. `app/globals.css` is one coherent responsive layout system, replacing the previous stack of overrides. Hero, featured project, detail and staff layouts are reviewed in both languages at desktop/mobile sizes. Avoid repeating empty case-study headings; render only approved blocks.
 
-The original requirement for an interactive 3D hero and structure viewer is superseded for this release. Static photography/design imagery is the engineering presentation. Unmounted demo viewers and unused starter UI components were removed; a future 3D feature needs a separately approved quality review. Restrained image transitions use CSS and respect reduced motion.
+The original requirement for an interactive 3D hero and structure viewer is superseded for this release. Static photography/design imagery is the engineering presentation. Unmounted demo viewers and unused starter UI components were removed; a future 3D feature needs a separately approved quality review. The mobile hero uses a full-width 4:3 bridge photograph followed by heading and CTAs on paper; desktop uses text over the photograph. Restrained CSS interactions and cross-document root transitions respect reduced motion. No animation library is installed.
 
 - `content/site.ts`: reviewed projects, services, navigation and site identity. Keep missing years/roles/measurements omitted.
 - `content/team.ts`: company-supplied current names and roles; approved biographies only. Latin name spellings await confirmation, so EN retains the supplied Cyrillic names.
-- `content/media.ts`: replaceable images, dimensions, bilingual alt text, crop position and website-use approval. Portrait permission is independent of professional-information approval.
+- `content/media-sources.json`: approved source images, real dimensions, bilingual alt/caption, focal positions and per-image quality. `content/media.ts` supplies the typed public registry with generated responsive variants. Portrait permission is independent of professional-information approval.
 
-Add an authorized portrait to `public/team/`, register a `kind: 'portrait'` asset with `usageApproved: true`, then set the member's `portraitId`. Unapproved/missing assets automatically use a 4:5 graphite placeholder. All six current staff profiles now use company-supplied portraits. See `public/team/README.md`. Do not generate substitutes for missing staff portraits or publish diploma scans, personal identifiers, signatures or private contacts. Do not fabricate employees or biographies.
+Add an authorized portrait to `public/team/`, register a `kind: 'portrait'` asset in `content/media-sources.json` with `usageApproved: true`, then set the member's `portraitId`. Unapproved/missing assets automatically use a 4:5 graphite placeholder. All six current staff profiles now use company-supplied portraits. See `public/team/README.md`. Do not generate substitutes for missing staff portraits or publish diploma scans, personal identifiers, signatures or private contacts. Do not fabricate employees or biographies.
 
 The director's message component is ready but `directorMessage.approved` is false and its public paragraph list is empty. Keep drafts and review records outside this repository. After company review, copy the approved MN/EN paragraphs into `content/team.ts` and enable publication. A disabled flag is not sufficient protection for an unapproved draft stored in a public module.
 
@@ -56,4 +57,33 @@ Vinext's native basePath/trailingSlash settings did not export this application 
 
 Native Next App Router migration requires reviewing injected path constants, anchor/basePath handling, locale selection, metadata/static handlers and export output. Compatibility with Next/Vercel is not guaranteed. No database migration is needed.
 
-Deploy by merging a tested change into main. Roll back by reverting its merge commit; keep the previous live SHA in the handoff record. Source PDFs and all private provenance, personnel and draft records remain outside the repository and deployment.
+The redesign was reviewed locally on `design/editorial-redesign`, then separately authorized for publication on 2026-10-03. The previous successful live SHA is `0fa7805111ac50715749dfc5287184dfafc1bb0e` (Pages run `37091601397`). A main push triggers the existing GitHub Pages production workflow. Confirm the release's build/deploy result and live smoke test before reporting publication complete; retain the result in the ignored `outputs/deployment-release.json`. Roll back by reverting the release commit and rebuilding/testing the export. Source PDFs and all private provenance, personnel and draft records remain outside the repository and deployment.
+
+## Responsive media and case studies
+
+Sharp 0.35.4 is a direct development dependency; other framework versions are unchanged. `npm run prepare:media` runs before dev/build/lint/typecheck/site/media/capture/lab QA. A fresh checkout must prepare media before invoking `tsc` directly. Sources stay byte-for-byte intact. The generator auto-orients, strips EXIF, avoids upscaling, creates WebP widths and MN/EN project OG images, and caches outputs by input bytes, settings and Sharp versions. Generated JSON and `public/generated/` are ignored. Never store private rights documents in the public registry.
+
+The export adapter excludes source project/portrait images, unused font subsets, starter assets and obsolete generated variants from `site/`. It keeps the used Inter subsets and OFL license. Only needed derivatives, approved OG images and the sanitized dimensions/URL manifest are published. No source PDF is included.
+
+`ProjectImage` accepts `priority`: initial home/detail imagery uses eager/high; lower imagery is lazy/auto. No extra hand-authored image preload is used. `CaseStudyBlock` supports text, image, gallery, diagram, facts and related projects. Optional `Project.caseStudy` contains publication-ready blocks only. Default details use the existing approved summary and related projects. The initial detail photo opens a native dialog; the modal does not request a second image until opened.
+
+Filters use locale-independent category/year/location/status query values. Locale switches preserve these values, reload and browser history restore them, and canonical URLs omit queries. Internal route anchors include trailing slashes; the strict preview redirect also preserves query strings.
+
+## Local review and repeatable QA
+
+Current scope, evidence, remaining approvals and review files are listed in [REDESIGN_REVIEW.md](REDESIGN_REVIEW.md).
+
+```sh
+npm run lint
+npm run typecheck
+npm run build
+npm run check:site
+npm run check:zoom
+npm run check:media
+QA_REPORT_TAG=after npm run capture:design
+QA_REPORT_TAG=after QA_LAB_RUNS=5 npm run measure:lab
+```
+
+PowerShell sets these using `$env:QA_REPORT_TAG='after'` and `$env:QA_LAB_RUNS='5'`. `QA_GIT_PATH` optionally selects Git for source-byte checks, and `QA_SOURCE_REF` selects the baseline commit (default HEAD). `QA_SITE_DIR` optionally serves an ignored snapshot instead of `site/`. Export origin uses `GBET_PUBLIC_ORIGIN`. Reports are local/CI-only in `outputs/`. QA performs no external mail submission.
+
+Test the repository-prefix configuration separately by clearing `GBET_PUBLIC_ORIGIN`, rebuilding, and running site QA; then restore the custom-domain build. QA uses authored route definitions, strict 404s, direct refresh, metadata, URL filters, native dialog Escape/focus return, no-JS content, delayed hydration, responsive reflow, 200% text and axe. It is not WCAG certification. Synthetic menu INP is not real-user INP; absent samples remain null.

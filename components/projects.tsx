@@ -1,36 +1,36 @@
 import Link from "../lib/link";
 import { categories, ui, type Locale, type Project } from "../content/site";
 import { media } from "../content/media";
-import { asset } from "../lib/paths";
+import { MediaImage } from "./media-image";
 export function ProjectImage({
   project,
   locale,
+  priority = false,
 }: {
   project: Project;
   locale: Locale;
+  priority?: boolean;
 }) {
   const registered = media[project.slug];
   const image = registered
     ? {
-        src: asset(registered.src),
+        src: registered.src,
         alt: registered.alt,
         kind: registered.kind,
         usageApproved: registered.usageApproved,
       }
-    : project.image;
+    : undefined;
   return (
     <div
       className={`project-image ${image?.usageApproved ? "has-photo" : "awaiting-photo"} ${project.category}`}
     >
       {image?.usageApproved ? (
         <>
-          <img
-            src={image.src}
-            alt={image.alt[locale]}
-            loading="lazy"
-            width={registered?.width || 1320}
-            height={registered?.height || 824}
-            style={{ objectPosition: registered?.position || "center" }}
+          <MediaImage
+            id={project.slug}
+            locale={locale}
+            priority={priority}
+            sizes="(max-width: 767px) 100vw, 90vw"
           />
           <span className="photo-kind">
             {image.kind === "rendering"
@@ -116,7 +116,7 @@ export function ProjectCard({
 }) {
   return (
     <article
-      className={`project-card ${project.image?.usageApproved ? "photographic-project" : "textual-project"}`}
+      className={`project-card ${media[project.slug]?.usageApproved ? "photographic-project" : "textual-project"}`}
     >
       <Link href={`/${locale}/projects/${project.slug}`}>
         <ProjectImage project={project} locale={locale} />

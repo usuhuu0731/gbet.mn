@@ -1,6 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { categories, ui, type Locale, type Project } from "../content/site";
+import {
+  readFilters,
+  filterQuery,
+  emptyFilters,
+  type FilterKey,
+} from "../lib/project-filters";
 import { ProjectCard } from "./projects";
 import { useHydrated } from "../lib/use-hydrated";
 export function ProjectFilter({
@@ -11,16 +17,31 @@ export function ProjectFilter({
   locale: Locale;
 }) {
   const hydrated = useHydrated();
-  const [category, setCategory] = useState("all");
-  const [year, setYear] = useState("all");
-  const [location, setLocation] = useState("all");
-  const [status, setStatus] = useState("all");
+  const [filters, setFilters] = useState(emptyFilters);
+  useEffect(() => {
+    const sync = () =>
+      setFilters(readFilters(window.location.search, projects));
+    sync();
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, [projects]);
+  function update(key: FilterKey, value: string) {
+    const next = { ...filters, [key]: value };
+    setFilters(next);
+    window.history.pushState(
+      null,
+      "",
+      window.location.pathname + filterQuery(next),
+    );
+    window.dispatchEvent(new Event("gbet-filters"));
+  }
+  const { category, year, location, status } = filters;
   const filtered = projects.filter(
     (p) =>
       (category === "all" || p.category === category) &&
       (year === "all" || String(p.year) === year) &&
-      (location === "all" || p.location[locale] === location) &&
-      (status === "all" || p.status[locale] === status),
+      (location === "all" || p.locationId === location) &&
+      (status === "all" || p.statusId === status),
   );
   return (
     <>
@@ -40,7 +61,7 @@ export function ProjectFilter({
               key={value}
               aria-pressed={category === value}
               disabled={!hydrated}
-              onClick={() => setCategory(value)}
+              onClick={() => update("category", value)}
             >
               {label}
             </button>
@@ -51,7 +72,7 @@ export function ProjectFilter({
             {
               name: locale === "mn" ? "Он" : "Year",
               value: year,
-              set: setYear,
+              set: (value: string) => update("year", value),
               values: [
                 ...new Set(
                   projects
@@ -65,14 +86,14 @@ export function ProjectFilter({
             {
               name: locale === "mn" ? "Байршил" : "Location",
               value: location,
-              set: setLocation,
-              values: [...new Set(projects.map((p) => p.location[locale]))],
+              set: (value: string) => update("location", value),
+              values: [...new Set(projects.map((p) => p.locationId))],
             },
             {
               name: locale === "mn" ? "Төлөв" : "Status",
               value: status,
-              set: setStatus,
-              values: [...new Set(projects.map((p) => p.status[locale]))],
+              set: (value: string) => update("status", value),
+              values: [...new Set(projects.map((p) => p.statusId))],
             },
           ].map((f) => (
             <label key={f.name}>
@@ -85,7 +106,13 @@ export function ProjectFilter({
               >
                 <option value="all">{ui.all[locale]}</option>
                 {f.values.map((v) => (
-                  <option key={v}>{v}</option>
+                  <option key={v} value={v}>
+                    {projects.find((p) => p.locationId === v)?.location[
+                      locale
+                    ] ||
+                      projects.find((p) => p.statusId === v)?.status[locale] ||
+                      v}
+                  </option>
                 ))}
               </select>
             </label>
@@ -94,10 +121,9 @@ export function ProjectFilter({
             className="reset"
             disabled={!hydrated}
             onClick={() => {
-              setCategory("all");
-              setYear("all");
-              setLocation("all");
-              setStatus("all");
+              setFilters(emptyFilters);
+              window.history.pushState(null, "", window.location.pathname);
+              window.dispatchEvent(new Event("gbet-filters"));
             }}
           >
             {locale === "mn" ? "Цэвэрлэх" : "Reset"}

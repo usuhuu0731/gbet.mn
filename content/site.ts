@@ -1,4 +1,5 @@
 import { asset, publicOrigin } from "../lib/paths";
+import type { CaseStudyBlock } from "./case-study";
 export type Locale = "mn" | "en";
 export type Localized = Record<Locale, string>;
 export const text = (mn: string, en: string): Localized => ({ mn, en });
@@ -6,7 +7,15 @@ export const locales: Locale[] = ["mn", "en"];
 export const site = {
   origin: publicOrigin,
   name: text("ГБЭТ ХХК", "GBET Consulting Engineers"),
-  alternateNames: ["ГБЭТ", "ГБЭТ ХХК", "GBET", "GBET LLC", "GBET MN", "gbet.mn", "GBET Consulting Engineers"],
+  alternateNames: [
+    "ГБЭТ",
+    "ГБЭТ ХХК",
+    "GBET",
+    "GBET LLC",
+    "GBET MN",
+    "gbet.mn",
+    "GBET Consulting Engineers",
+  ],
   homeTitle: text(
     "Зураг төсөл, технологи-инженерийн зөвлөх ГБЭТ ХХК",
     "GBET Consulting Engineers | Bridge Design Mongolia",
@@ -117,10 +126,12 @@ export interface Project {
   slug: string;
   name: Localized;
   location: Localized;
+  locationId: string;
   year?: number;
   category: Category;
   role?: Localized;
   status: Localized;
+  statusId: string;
   summary: Localized;
   length?: string;
   bridgeType?: Localized;
@@ -137,11 +148,14 @@ export interface Project {
     alt: Localized;
     kind?: "photograph" | "rendering";
   };
+  caseStudy?: CaseStudyBlock[];
 }
 // Only approved claim-level projections belong in this public content module.
 export const projects: Project[] = [
   {
     slug: "ongi-river",
+    locationId: "saikhan-ovoo",
+    statusId: "opened-2021",
     name: text("Онгийн голын гүүр", "Ongi River Bridge"),
     location: text("Дундговь · Сайхан-Овоо", "Saikhan-Ovoo · Dundgovi"),
     year: 2021,
@@ -168,6 +182,8 @@ export const projects: Project[] = [
   },
   {
     slug: "orkhon-ongotstoi",
+    locationId: "bat-ulzii",
+    statusId: "opened-2021",
     name: text("Орхон голын Онгоцтойн гүүр", "Orkhon / Ongotstoi Bridge"),
     location: text("Өвөрхангай · Бат-Өлзий", "Bat-Ulzii · Uvurkhangai"),
     year: 2021,
@@ -193,6 +209,8 @@ export const projects: Project[] = [
   },
   {
     slug: "tuul-railway",
+    locationId: "khan-uul",
+    statusId: "design-record-2026",
     name: text("Туул голын төмөр замын гүүр", "Tuul River Railway Bridge"),
     location: text("Улаанбаатар · Хан-Уул", "Khan-Uul · Ulaanbaatar"),
     year: 2026,
@@ -216,6 +234,8 @@ export const projects: Project[] = [
   },
   {
     slug: "peace-bridge",
+    locationId: "khan-uul",
+    statusId: "design-record-2026",
     name: text(
       "Энхтайваны гүүрийн өргөтгөл, хүчитгэл",
       "Peace Bridge Widening & Strengthening",
@@ -242,6 +262,8 @@ export const projects: Project[] = [
   },
   {
     slug: "naadamchid-connection",
+    locationId: "khan-uul",
+    statusId: "public-record",
     name: text(
       "Наадамчдын авто замын гүүрэн холбоос",
       "Naadamchid Road Bridge Connection",
@@ -268,6 +290,8 @@ export const projects: Project[] = [
   },
   {
     slug: "mg-modular-bridge",
+    locationId: "mongolia",
+    statusId: "collaboration-record",
     name: text("MG модуль гүүр", "MG Modular Bridge"),
     location: text("Монгол Улс", "Mongolia"),
     year: 2013,
@@ -297,6 +321,8 @@ const brochureNote = text(
 projects.unshift(
   {
     slug: "sonsgolon",
+    locationId: "khan-uul",
+    statusId: "portfolio",
     name: text("Сонсголонгийн гүүр", "Sonsgolon Bridge"),
     location: text("Улаанбаатар · Хан-Уул", "Khan-Uul · Ulaanbaatar"),
     category: "bridges",
@@ -325,6 +351,8 @@ projects.unshift(
   },
   {
     slug: "ikh-tamir",
+    locationId: "battsengel",
+    statusId: "portfolio",
     name: text("Их Тамирын голын гүүр", "Ikh Tamir River Bridge"),
     location: text("Архангай · Батцэнгэл", "Battsengel · Arkhangai"),
     category: "bridges",
@@ -353,6 +381,8 @@ projects.unshift(
   },
   {
     slug: "tavantolgoi-zuunbayan",
+    locationId: "mongolia",
+    statusId: "portfolio",
     name: text(
       "Тавантолгой–Зүүнбаян төмөр замын гүүрүүд",
       "Tavantolgoi–Zuunbayan Railway Bridges",

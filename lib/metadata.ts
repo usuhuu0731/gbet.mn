@@ -5,6 +5,7 @@ export function pageMetadata(
   path: string,
   title: string,
   description = site.description[locale],
+  ogPath = "/opengraph.jpg",
 ): Metadata {
   const suffix = path ? `/${path}` : "";
   const url = `${site.origin}/${locale}${suffix}/`;
@@ -29,7 +30,7 @@ export function pageMetadata(
       type: "website",
       images: [
         {
-          url: `${site.origin}/opengraph.jpg`,
+          url: `${site.origin}${ogPath}`,
           width: 1200,
           height: 630,
           alt: site.name[locale],

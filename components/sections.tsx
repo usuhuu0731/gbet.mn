@@ -1,5 +1,12 @@
 import Link from "../lib/link";
-import { credential, services, site, text, type Locale } from "../content/site";
+import {
+  credential,
+  services,
+  site,
+  text,
+  projects,
+  type Locale,
+} from "../content/site";
 export function SectionHeading({
   number,
   label,
@@ -20,6 +27,12 @@ export function SectionHeading({
   );
 }
 export function ExpertiseGrid({ locale }: { locale: Locale }) {
+  const examples: Record<number, string[]> = {
+    0: ["ongi-river", "orkhon-ongotstoi"],
+    1: ["peace-bridge"],
+    2: ["naadamchid-connection"],
+    5: ["tuul-railway"],
+  };
   return (
     <div className="expertise-grid">
       {services.map((s, i) => (
@@ -27,6 +40,15 @@ export function ExpertiseGrid({ locale }: { locale: Locale }) {
           <span className="section-number">0{i + 1}</span>
           <h3>{s.title[locale]}</h3>
           <p>{s.copy[locale]}</p>
+          {examples[i] && (
+            <div className="service-projects">
+              {examples[i].map((slug) => (
+                <Link key={slug} href={`/${locale}/projects/${slug}`}>
+                  {projects.find((p) => p.slug === slug)?.name[locale]} ↗
+                </Link>
+              ))}
+            </div>
+          )}
         </article>
       ))}
     </div>

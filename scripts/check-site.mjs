@@ -5,14 +5,19 @@ import { mkdir, readFile, writeFile, readdir } from "node:fs/promises";
 import { once } from "node:events";
 import { createStaticServer } from "./serve-static.mjs";
 import { basePath, origin } from "./site-config.mjs";
+import { expectedRoutes, slugs } from "./expected-routes.mjs";
 
 await mkdir("outputs", { recursive: true });
 const sitemap = await readFile("site/sitemap.xml", "utf8");
 const routes = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(
   (match) => match[1],
 );
-assert.equal(routes.length, 36, "36 localized routes");
-assert.equal(new Set(routes).size, 36);
+assert.deepEqual(
+  routes.map((url) => url.slice(origin.length)).sort(),
+  expectedRoutes,
+  "Exported routes match authored content",
+);
+assert.equal(new Set(routes).size, expectedRoutes.length);
 assert.ok(
   routes.every((url) => url.startsWith(origin + "/") && url.endsWith("/")),
 );
@@ -21,6 +26,35 @@ assert.equal(
   "google-site-verification: google9a26a91e934cf80c.html",
 );
 const publicFiles = await readdir("site", { recursive: true });
+const manifest = JSON.parse(
+  await readFile("site/manifest.webmanifest", "utf8"),
+);
+assert.equal(manifest.start_url, `${basePath}/mn/`);
+assert.equal(manifest.scope, `${basePath}/`);
+assert.ok(manifest.icons.every((icon) => icon.src.startsWith(`${basePath}/`)));
+assert.equal(
+  (await readFile("site/robots.txt", "utf8")).trim(),
+  `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml`,
+);
+if (process.env.GBET_PUBLIC_ORIGIN)
+  assert.equal(
+    (await readFile("site/CNAME", "utf8")).trim(),
+    new URL(origin).hostname,
+  );
+else
+  assert.ok(
+    !publicFiles.includes("CNAME"),
+    "No custom-domain CNAME in prefix export",
+  );
+const forbidden =
+  /611.?879.?400|846[.,]5|Founded in 1996|World Bank partner|staff-source|director-message-draft|gbet-review/;
+for (const file of publicFiles.filter((file) =>
+  /\.(html|js|json|rsc|map|txt|xml|webmanifest|css)$/i.test(file),
+))
+  assert.ok(
+    !forbidden.test(await readFile("site/" + file, "utf8")),
+    `No private/unapproved marker in ${file}`,
+  );
 assert.ok(
   !publicFiles.some((file) =>
     /gbet-review|staff-source|director-message-draft|bandi-reference|\.pdf$/i.test(
@@ -66,6 +100,20 @@ try {
   );
   await delayedPage.close();
   const page = await context.newPage();
+  assert.equal(
+    (await context.request.get(base + "/not-a-real-route/")).status(),
+    404,
+    "No SPA fallback",
+  );
+  const redirect = await context.request.get(
+    base + "/en/projects?status=opened-2021",
+    { maxRedirects: 0 },
+  );
+  assert.equal(redirect.status(), 301);
+  assert.equal(
+    redirect.headers().location,
+    basePath + "/en/projects/?status=opened-2021",
+  );
   const errors = [],
     failed = [],
     overflow = [],
@@ -77,6 +125,7 @@ try {
   });
   const leaked =
     /611.?879.?400|846[.,]5|Founded in 1996|World Bank partner|Монгол Улсын гүүрийн салбарын ирээдүйг бид/;
+  const projectTitles = new Set();
   for (const url of routes) {
     const route = url.slice(origin.length);
     const response = await page.goto(base + route, {
@@ -96,7 +145,46 @@ try {
       assert.equal(await page.locator(`link[hreflang=${language}]`).count(), 1);
     assert.ok(!leaked.test(await page.locator("body").innerText()), route);
     assert.equal(await page.locator("canvas").count(), 0);
+    if (/\/projects\/[^/]+\/$/.test(route)) {
+      const title = await page.title();
+      assert.ok(!projectTitles.has(title), "Unique localized project title");
+      projectTitles.add(title);
+      const og = await page
+        .locator('meta[property="og:image"]')
+        .getAttribute("content");
+      assert.ok(og.startsWith(origin + "/"), "OG uses selected origin");
+      const image = await context.request.get(base + og.slice(origin.length));
+      assert.equal(image.status(), 200, "Exported project OG asset exists");
+      assert.match(image.headers()["content-type"], /^image\//);
+    }
   }
+  const noJS = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 844 },
+  });
+  for (const locale of ["mn", "en"]) {
+    const staticPage = await noJS.newPage();
+    await staticPage.goto(`${base}/${locale}/`);
+    assert.ok(await staticPage.locator("h1").isVisible());
+    assert.equal(await staticPage.locator(".hero-actions a").count(), 2);
+    assert.equal(
+      await staticPage.locator(".hero-picture img").getAttribute("loading"),
+      "eager",
+    );
+    assert.equal(
+      await staticPage
+        .locator(".hero-picture img")
+        .getAttribute("fetchpriority"),
+      "high",
+    );
+    await staticPage.goto(`${base}/${locale}/projects/`);
+    assert.equal(
+      await staticPage.locator(".project-card").count(),
+      slugs.length,
+    );
+    await staticPage.close();
+  }
+  await noJS.close();
   await page.goto(base + "/en/projects/");
   const cards = async (count) => {
     await page.waitForFunction(
@@ -104,24 +192,106 @@ try {
       count,
     );
   };
-  await cards(9);
+  await cards(slugs.length);
   await page
     .getByRole("button", { name: "Rail infrastructure", exact: true })
     .click();
   await cards(2);
   await page.getByRole("button", { name: "Reset", exact: true }).click();
-  await cards(9);
+  await cards(slugs.length);
   await page.getByLabel("Year", { exact: true }).selectOption("2013");
   await cards(1);
-  await page
-    .getByLabel("Location", { exact: true })
-    .selectOption("Khan-Uul · Ulaanbaatar");
+  await page.getByLabel("Location", { exact: true }).selectOption("khan-uul");
   await cards(0);
   await page.getByRole("button", { name: "Reset", exact: true }).click();
-  await page
-    .getByLabel("Status", { exact: true })
-    .selectOption("Opened in 2021");
+  await page.getByLabel("Status", { exact: true }).selectOption("opened-2021");
   await cards(2);
+  await page.reload();
+  await cards(2);
+  assert.ok(new URL(page.url()).searchParams.get("status") === "opened-2021");
+  await page
+    .locator(".language")
+    .getByRole("link", { name: "MN", exact: true })
+    .click();
+  await page.waitForURL("**/mn/projects/?status=opened-2021");
+  await cards(2);
+  await page.getByRole("button", { name: "Цэвэрлэх", exact: true }).click();
+  await cards(slugs.length);
+  await page.goBack();
+  await cards(2);
+  await page.goForward();
+  await cards(slugs.length);
+  await page.goto(base + "/en/projects/?status=invalid&year=not-a-year");
+  await cards(slugs.length);
+  assert.equal(
+    await page.locator('link[rel="canonical"]').getAttribute("href"),
+    origin + "/en/projects/",
+  );
+  await page.goto(base + "/en/projects/ikh-tamir/");
+  const expand = page.getByRole("button", {
+    name: "Expand image",
+    exact: true,
+  });
+  await expand.click();
+  assert.equal(await page.locator("dialog").evaluate((d) => d.open), true);
+  const dialogAxe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  axe.push({
+    width: 1440,
+    locale: "en",
+    route: "projects/ikh-tamir/dialog",
+    violations: dialogAxe.violations.map((v) => ({
+      id: v.id,
+      nodes: v.nodes.map((n) => n.target),
+    })),
+  });
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator("dialog").evaluate((d) => d.open), false);
+  await expand.focus();
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  assert.equal(
+    await page.locator(":focus").textContent(),
+    await expand.textContent(),
+  );
+  assert.equal(
+    await page
+      .locator(".detail-hero .project-image img")
+      .getAttribute("loading"),
+    "eager",
+  );
+  assert.equal(
+    await page
+      .locator(".detail-hero .project-image img")
+      .getAttribute("fetchpriority"),
+    "high",
+  );
+  assert.ok(
+    (
+      await page
+        .locator(".detail-hero .project-image img")
+        .getAttribute("srcset")
+    ).includes("480w"),
+  );
+  assert.ok(
+    (
+      await page.locator('meta[property="og:image"]').getAttribute("content")
+    ).includes("/generated/og-ikh-tamir-en-"),
+  );
+  assert.ok(
+    !(await page.locator("main").innerText()).includes(
+      "following internal review",
+    ),
+  );
+  await page.goto(base + "/en/projects/ongi-river/");
+  assert.equal(await page.locator(".detail-hero .awaiting-photo").count(), 1);
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Expand image", exact: true })
+      .count(),
+    0,
+  );
   for (const route of ["team", "projects/ongi-river"]) {
     await page.goto(base + "/en/" + route + "/");
     await page
@@ -180,6 +350,63 @@ try {
     await page.locator(":focus").getAttribute("class"),
     /menu-button/,
   );
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
+  await page.locator("#expanded-menu a").last().focus();
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(() => !document.querySelector("#expanded-menu"));
+  const touchContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+  });
+  const touch = await touchContext.newPage();
+  await touch.goto(base + "/en/projects/ikh-tamir/");
+  await touch.getByRole("button", { name: "Expand image", exact: true }).tap();
+  assert.equal(await touch.locator("dialog").evaluate((d) => d.open), true);
+  await touch.getByRole("button", { name: "Close", exact: true }).tap();
+  for (const target of await touch
+    .locator(".gallery-open,.menu-button,.language a")
+    .all()) {
+    const box = await target.boundingBox();
+    assert.ok(box.width >= 44 && box.height >= 44, "44px touch control");
+  }
+  await touch.screenshot({ path: "outputs/gallery-touch.png" });
+  await touchContext.close();
+  const retinaContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 2,
+    reducedMotion: "reduce",
+  });
+  const retina = await retinaContext.newPage();
+  await retina.goto(base + "/mn/");
+  await retina.evaluate(() => document.fonts.ready);
+  const hero = retina.locator(".hero-picture img");
+  await hero.evaluate((image) => image.decode());
+  const selectedPath = await hero.evaluate(
+    (image) => new URL(image.currentSrc).pathname,
+  );
+  const preparedMedia = JSON.parse(
+    await readFile("site/generated/media-manifest.json", "utf8"),
+  );
+  const selectedVariant = preparedMedia["ikh-tamir"].variants.find(
+    (variant) => basePath + variant.src === selectedPath,
+  );
+  // naturalWidth is density-corrected for srcset; verify the actual file pixels.
+  assert.ok(
+    selectedVariant && selectedVariant.width >= 780,
+    "High-DPR hero uses an adequate responsive variant",
+  );
+  assert.ok(
+    await retina
+      .locator(".project-image img")
+      .first()
+      .evaluate(
+        (image) =>
+          parseFloat(getComputedStyle(image).transitionDuration) <= 0.001,
+      ),
+    "Reduced motion disables image transition",
+  );
+  await retina.screenshot({ path: "outputs/hero-mn-dpr2.png" });
+  await retinaContext.close();
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const locale of ["mn", "en"])
@@ -222,7 +449,7 @@ try {
     for (const locale of ["mn", "en"]) {
       await page.goto(`${base}/${locale}/`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
-      await page.locator(".hero-photograph").evaluate((image) => {
+      await page.locator(".hero-picture img").evaluate((image) => {
         if (image.complete && image.naturalWidth) return;
         return new Promise((resolve, reject) => {
           image.addEventListener("load", resolve, { once: true });

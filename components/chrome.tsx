@@ -3,7 +3,8 @@ import { asset, basePath } from "../lib/paths";
 import Link from "../lib/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { nav, site, type Locale } from "../content/site";
+import { nav, site, projects, type Locale } from "../content/site";
+import { readFilters, filterQuery } from "../lib/project-filters";
 import { useHydrated } from "../lib/use-hydrated";
 export function SiteHeader({ locale }: { locale: Locale }) {
   const hydrated = useHydrated();
@@ -11,6 +12,22 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     .replace(new RegExp(`^${basePath}(?=/|$)`), "")
     .replace(/\/$/, "");
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    const sync = () =>
+      setQuery(
+        path.endsWith("/projects")
+          ? filterQuery(readFilters(window.location.search, projects))
+          : "",
+      );
+    sync();
+    window.addEventListener("popstate", sync);
+    window.addEventListener("gbet-filters", sync);
+    return () => {
+      window.removeEventListener("popstate", sync);
+      window.removeEventListener("gbet-filters", sync);
+    };
+  }, [path]);
   const headerRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!open) return;
@@ -28,6 +45,14 @@ export function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <header
       ref={headerRef}
+      onBlur={(event) => {
+        if (
+          open &&
+          event.relatedTarget instanceof Node &&
+          !headerRef.current?.contains(event.relatedTarget)
+        )
+          setOpen(false);
+      }}
       className={`header ${path === `/${locale}` ? "header-home" : ""} ${open ? "menu-open" : ""}`}
     >
       <Link
@@ -62,7 +87,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           {(["mn", "en"] as const).map((l) => (
             <Link
               key={l}
-              href={path.replace(/^\/(mn|en)(?=\/|$)/, `/${l}`)}
+              href={path.replace(/^\/(mn|en)(?=\/|$)/, `/${l}`) + query}
               lang={l}
               aria-current={locale === l ? "true" : undefined}
               onClick={() => {
@@ -113,44 +138,5 @@ export function SiteHeader({ locale }: { locale: Locale }) {
         </nav>
       )}
     </header>
-  );
-}
-export function SiteFooter({ locale }: { locale: Locale }) {
-  return (
-    <footer className="footer">
-      <div className="footer-top">
-        <div>
-          <p className="eyebrow">GBET / CONSULTING ENGINEERS</p>
-          <h2>
-            {locale === "mn"
-              ? "Холболтыг инженерчилнэ."
-              : "Engineering connections."}
-          </h2>
-        </div>
-        <Link className="button light" href={`/${locale}/contact`}>
-          {locale === "mn" ? "Төслийн талаар ярилцах" : "Discuss a project"}
-        </Link>
-      </div>
-      <div className="footer-grid">
-        <p>{site.description[locale]}</p>
-        <nav aria-label={locale === "mn" ? "Доод цэс" : "Footer navigation"}>
-          {nav.slice(1).map((n) => (
-            <Link key={n.path} href={`/${locale}/${n.path}`}>
-              {n.name[locale]}
-            </Link>
-          ))}
-        </nav>
-        <div>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-          <p>{site.address[locale]}</p>
-        </div>
-      </div>
-      <div className="footer-bottom">
-        <span>
-          © {new Date().getFullYear()} {site.name[locale]}
-        </span>
-        <span>GBET LLC · gbet.mn · ULAANBAATAR, MONGOLIA</span>
-      </div>
-    </footer>
   );
 }

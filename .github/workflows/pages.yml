@@ -20,14 +20,16 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npx tsc --noEmit
+      - run: npm run typecheck
+      - run: npm run check:media
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run check:site
+      - run: npm run check:zoom
       - uses: actions/upload-artifact@v4
         if: always()
         with:

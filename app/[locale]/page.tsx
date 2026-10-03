@@ -1,9 +1,7 @@
-import type { CSSProperties } from "react";
-import { asset } from "../../lib/paths";
+import { MediaImage } from "../../components/media-image";
 import Link from "../../lib/link";
 import { ProjectFeature } from "../../components/projects";
 import { TeamSection } from "../../components/team";
-import { media } from "../../content/media";
 import {
   SectionHeading,
   ExpertiseGrid,
@@ -27,54 +25,29 @@ export default async function Home({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale: l } = await params;
-  const hero = media["ikh-tamir"];
-  const engineeringImage = media["tavantolgoi-zuunbayan"];
   return (
     <main id="main" className="portfolio-home">
-      {hero.usageApproved && (
-        <>
-          <link
-            rel="preload"
-            as="image"
-            href={asset(hero.mobileSrc || hero.src)}
-            media="(max-width: 640px)"
-            fetchPriority="high"
+      <section className="image-hero">
+        <div className="hero-visual">
+          <MediaImage
+            id="ikh-tamir"
+            locale={l}
+            priority
+            className="hero-picture"
           />
-          <link
-            rel="preload"
-            as="image"
-            href={asset(hero.src)}
-            media="(min-width: 641px)"
-            fetchPriority="high"
-          />
-        </>
-      )}
-      <section
-        className="image-hero"
-        style={
-          {
-            "--hero-position": hero.position,
-            "--hero-mobile-position": hero.mobilePosition || hero.position,
-          } as CSSProperties
-        }
-      >
-        {hero.usageApproved && (
-          <picture>
-            <source
-              media="(max-width: 640px)"
-              srcSet={asset(hero.mobileSrc || hero.src)}
-            />
-            <img
-              className="hero-photograph"
-              src={asset(hero.src)}
-              alt={hero.alt[l]}
-              width={hero.width}
-              height={hero.height}
-              fetchPriority="high"
-            />
-          </picture>
-        )}
-        <div className="hero-shade" aria-hidden="true" />
+          <div className="hero-shade" aria-hidden="true" />
+          <Link
+            href={`/${l}/projects/ikh-tamir`}
+            className="hero-image-caption"
+          >
+            {l === "mn" ? "Их Тамирын голын гүүр" : "Ikh Tamir River Bridge"}
+            <span>
+              {l === "mn"
+                ? "Архангай · Батцэнгэл / 198 м"
+                : "Battsengel · Arkhangai / 198 m"}
+            </span>
+          </Link>
+        </div>
         <div className="hero-editorial">
           <p className="eyebrow">
             <span className="hero-rule" aria-hidden="true" />
@@ -85,36 +58,26 @@ export default async function Home({
           <h1>
             {l === "mn" ? "Гүүрийн\nинженерчлэл." : "Bridge\nengineering."}
           </h1>
-          <Link className="hero-project-link" href={`/${l}/projects`}>
-            {l === "mn" ? "Бидний төслүүд" : "Discover our work"}
-            <span aria-hidden="true">↗</span>
-          </Link>
+          <p className="hero-description">
+            {l === "mn"
+              ? "Монголын гүүр, дэд бүтцийн зураг төслийн зөвлөх инженерүүд."
+              : "Consulting engineers for Mongolia’s bridges and infrastructure."}
+          </p>
+          <div className="hero-actions">
+            <Link className="hero-project-link" href={`/${l}/projects`}>
+              {l === "mn" ? "Бидний төслүүд" : "Discover our work"}
+              <span aria-hidden="true">↗</span>
+            </Link>
+            <Link className="hero-contact-link" href={`/${l}/contact`}>
+              {l === "mn" ? "Холбоо барих" : "Get in touch"}
+              <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
         </div>
-        <div className="hero-side-note" aria-hidden="true">
-          GBET / CONSULTING ENGINEERS
-        </div>
-        <div className="hero-caption">
-          <Link
-            href={`/${l}/projects/ikh-tamir`}
-            className="hero-location-link"
-          >
-            <span className="hero-location-index" aria-hidden="true">
-              01 /
-            </span>
-            <span>
-              {l === "mn" ? "Их Тамирын голын гүүр" : "Ikh Tamir River Bridge"}
-              <small>
-                {l === "mn"
-                  ? "Архангай · Батцэнгэл / 198 м"
-                  : "Battsengel · Arkhangai / 198 m"}
-              </small>
-            </span>
-          </Link>
-          <a href="#introduction" className="scroll-cue">
-            {l === "mn" ? "Доош үзэх" : "Scroll to explore"}{" "}
-            <span aria-hidden="true">↓</span>
-          </a>
-        </div>
+        <a href="#introduction" className="scroll-cue">
+          {l === "mn" ? "Доош үзэх" : "Scroll to explore"}
+          <span aria-hidden="true">↓</span>
+        </a>
       </section>
       <section className="section intro editorial-intro" id="introduction">
         <p className="eyebrow">
@@ -170,16 +133,11 @@ export default async function Home({
       </section>
       <section className="digital-design">
         <div className="digital-image">
-          {engineeringImage.usageApproved && (
-            <img
-              src={asset(engineeringImage.src)}
-              alt={engineeringImage.alt[l]}
-              width={engineeringImage.width}
-              height={engineeringImage.height}
-              loading="lazy"
-              style={{ objectPosition: engineeringImage.position }}
-            />
-          )}
+          <MediaImage
+            id="tavantolgoi-zuunbayan"
+            locale={l}
+            sizes="(max-width: 767px) 100vw, 55vw"
+          />
         </div>
         <div className="digital-copy">
           <p className="eyebrow">
