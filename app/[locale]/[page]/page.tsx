@@ -1,4 +1,5 @@
 import { asset } from "../../../lib/paths";
+import { media } from "../../../content/media";
 import { notFound } from "next/navigation";
 import Link from "../../../lib/link";
 import {
@@ -21,7 +22,11 @@ import {
 } from "../../../components/sections";
 
 import { StructuredData } from "../../../components/structured-data";
-import { TeamGrid, TeamSection, DirectorMessage } from "../../../components/team";
+import {
+  TeamGrid,
+  TeamSection,
+  DirectorMessage,
+} from "../../../components/team";
 const valid = nav.map((n) => n.path).filter(Boolean);
 export async function generateMetadata({
   params,
@@ -40,6 +45,7 @@ export default async function ContentPage({
   const { locale: l, page } = await params;
   if (!valid.includes(page)) notFound();
   const n = nav.find((n) => n.path === page)!;
+  const engineeringImage = media["tavantolgoi-zuunbayan"];
   const titles: Record<string, ReturnType<typeof text>> = {
     team: text("Шийдлийн цаадах\nхүмүүс.", "The people behind\nthe design."),
     about: text(
@@ -83,7 +89,16 @@ export default async function ContentPage({
           <ProjectFilter projects={projects} locale={l} />
         </section>
       )}
-      {page === "team" && <section className="section page-content team-page"><p className="team-introduction">{l === "mn" ? "ГБЭТ ХХК-ийн удирдлага, инженерчлэл болон төслийн гүйцэтгэлийн баг." : "The leadership, engineering and project delivery team at GBET."}</p><TeamGrid locale={l} /></section>}
+      {page === "team" && (
+        <section className="section page-content team-page">
+          <p className="team-introduction">
+            {l === "mn"
+              ? "ГБЭТ ХХК-ийн удирдлага, инженерчлэл болон төслийн гүйцэтгэлийн баг."
+              : "The leadership, engineering and project delivery team at GBET."}
+          </p>
+          <TeamGrid locale={l} />
+        </section>
+      )}
       {page === "about" && (
         <>
           <section className="section intro">
@@ -183,23 +198,22 @@ export default async function ContentPage({
                 l === "mn" ? "Хэсэг ба бүхэл." : "The elements and the whole."
               }
             />
-            <figure className="engineering-photo">
-              <img
-                src={asset("/projects/railway-construction.webp")} 
-                alt={
-                  l === "mn"
-                    ? "Төмөр замын гүүрийн барилгын үе"
-                    : "Railway bridge during construction"
-                }
-                width="1320"
-                height="824"
-              />
-              <figcaption>
-                {l === "mn"
-                  ? "Тавантолгой–Зүүнбаян · Компанийн танилцуулгын гэрэл зураг"
-                  : "Tavantolgoi–Zuunbayan · Company portfolio photograph"}
-              </figcaption>
-            </figure>
+            {engineeringImage.usageApproved && (
+              <figure className="engineering-photo">
+                <img
+                  src={asset(engineeringImage.src)}
+                  alt={engineeringImage.alt[l]}
+                  width={engineeringImage.width}
+                  height={engineeringImage.height}
+                  style={{ objectPosition: engineeringImage.position }}
+                />
+                <figcaption>
+                  {l === "mn"
+                    ? "Тавантолгой–Зүүнбаян · Компанийн танилцуулгын гэрэл зураг"
+                    : "Tavantolgoi–Zuunbayan · Company portfolio photograph"}
+                </figcaption>
+              </figure>
+            )}
           </section>
           <section className="section intro">
             <p className="eyebrow">
@@ -300,4 +314,8 @@ export default async function ContentPage({
 }
 
 export const dynamicParams = false;
-export function generateStaticParams() { return ["mn", "en"].flatMap(locale => valid.map(page => ({locale,page}))); }
+export function generateStaticParams() {
+  return ["mn", "en"].flatMap((locale) =>
+    valid.map((page) => ({ locale, page })),
+  );
+}

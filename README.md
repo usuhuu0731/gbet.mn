@@ -24,6 +24,8 @@ Without `GBET_PUBLIC_ORIGIN`, repository-prefixed GitHub Pages export remains su
 
 The workflow validates pull requests, and deploys successful main/manual builds. Checks include 36 localized routes, six staff members, filters, locale preservation, mailto form validation, keyboard navigation, reduced motion, responsive widths, 200% text enlargement, private artifact exclusions and automated axe checks. Screenshots/reports are CI artifacts, not public website assets. These checks are not a full WCAG certification or field Core Web Vitals guarantee.
 
+Client-only controls are disabled until hydration can handle the first action. A delayed-script test exercises this behavior. Browser QA waits for the document and actual UI/image readiness; unrelated long-polling is not a readiness signal. Latest measured performance and its limitations are in [PERFORMANCE.md](PERFORMANCE.md).
+
 ## Visual and content system
 
 The Korean BANDI website is the primary design reference for large engineering imagery, editorial hierarchy, whitespace and restrained interaction. sbp/Arup inform information relationships only. No reference code, photography or copy is reused. `app/globals.css` is one coherent responsive layout system, replacing the previous stack of overrides. Initial hero, featured project and staff layouts must be reviewed at desktop/mobile sizes before extending the design.
