@@ -6,7 +6,7 @@ The visual redesign and team pages shipped first on the established Vinext beta.
 |---|---|---|
 | vinext | 1.0.0-beta.5 | 1.0.1 |
 | @vitejs/plugin-rsc | 0.5.26 | 0.5.34 |
-| vite | 8.3.0 | 8.3.2 |
+| vite | 8.0.13 | 8.3.2 |
 | next / eslint-config-next | 16.3.4 | 16.3.8 |
 | react / react-dom / react-server-dom-webpack | 19.2.6 | 19.2.6 |
 
