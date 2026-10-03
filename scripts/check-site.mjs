@@ -246,6 +246,12 @@ try {
         .first()
         .screenshot({ path: `outputs/project-${locale}-${width}.png` });
       await page.goto(`${base}/${locale}/team/`, { waitUntil: "load" });
+      // Full-page captures must include lazy portraits below the initial viewport.
+      for (const portrait of await page.locator(".team-portrait img").all()) {
+        await portrait.scrollIntoViewIfNeeded();
+        await portrait.evaluate((image) => image.decode());
+      }
+      await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
         path: `outputs/team-${locale}-${width}.png`,
         fullPage: true,

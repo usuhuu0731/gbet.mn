@@ -26,16 +26,19 @@ export const team: TeamMember[] = [
   },
   {
     id: "baigal",
+    portraitId: "portrait-baigal",
     name: text("Э. Байгал", "Э. Байгал"),
     role: text("Санхүү хариуцсан захирал", "Finance Director"),
   },
   {
     id: "mendsaikhan",
+    portraitId: "portrait-mendsaikhan",
     name: text("М. Мэндсайхан", "М. Мэндсайхан"),
     role: text("Хууль, эрх зүйн хэлтсийн дарга", "Head of Legal Department"),
   },
   {
     id: "purevdagva",
+    portraitId: "portrait-purevdagva",
     name: text("Ж. Пүрэвдагва", "Ж. Пүрэвдагва"),
     role: text(
       "Төслийн гүйцэтгэл хариуцсан хэлтсийн дарга",
@@ -44,6 +47,7 @@ export const team: TeamMember[] = [
   },
   {
     id: "usukhbayar",
+    portraitId: "portrait-usukhbayar",
     name: text("С. Өсөхбаяр", "С. Өсөхбаяр"),
     role: text("Зургийн инженер", "Design Engineer"),
   },

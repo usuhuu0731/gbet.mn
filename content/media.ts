@@ -15,6 +15,46 @@ export interface MediaAsset {
 
 // Paths are relative to public/. Portrait permission is independent of name/role approval.
 export const media: Record<string, MediaAsset> = {
+  "portrait-baigal": {
+    src: "/team/baigal.jpg",
+    width: 853,
+    height: 1280,
+    kind: "portrait",
+    position: "center 16%",
+    alt: text("Э. Байгалын хөрөг", "Portrait of Э. Байгал"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
+  "portrait-mendsaikhan": {
+    src: "/team/mendsaikhan.jpg",
+    width: 1280,
+    height: 960,
+    kind: "portrait",
+    position: "65% center",
+    alt: text("М. Мэндсайханы хөрөг", "Portrait of М. Мэндсайхан"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
+  "portrait-purevdagva": {
+    src: "/team/purevdagva.jpg",
+    width: 1024,
+    height: 1280,
+    kind: "portrait",
+    position: "center",
+    alt: text("Ж. Пүрэвдагвын хөрөг", "Portrait of Ж. Пүрэвдагва"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
+  "portrait-usukhbayar": {
+    src: "/team/usukhbayar.jpg",
+    width: 947,
+    height: 1280,
+    kind: "portrait",
+    position: "center top",
+    alt: text("С. Өсөхбаярын хөрөг", "Portrait of С. Өсөхбаяр"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
   "ikh-tamir": {
     src: "/projects/ikh-tamir.webp",
     // A tall hero covers by height: the 900×562 derivative visibly upscales on phones.
