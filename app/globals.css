@@ -308,7 +308,7 @@ a.small {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 54%;
+  object-position: var(--hero-position, center);
 }
 .hero-shade {
   position: absolute;
@@ -1356,7 +1356,7 @@ a.small {
     justify-content: center;
   }
   .hero-photograph {
-    object-position: 63% center;
+    object-position: var(--hero-mobile-position, var(--hero-position, center));
   }
   .hero-shade {
     background:

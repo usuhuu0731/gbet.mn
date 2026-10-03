@@ -62,7 +62,9 @@ try {
   for (const url of routes) {
     const route = url.slice(origin.length);
     const response = await page.goto(base + route, {
-      waitUntil: "networkidle",
+      // External long-polling (including locally injected software) is not page readiness.
+      // Assertions and locators below wait for the actual UI under test.
+      waitUntil: "load",
     });
     assert.equal(response.status(), 200, route);
     const locale = route.split("/")[1];
@@ -193,14 +195,29 @@ try {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     for (const locale of ["mn", "en"]) {
-      await page.goto(`${base}/${locale}/`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/${locale}/`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
+      await page.locator(".hero-photograph").evaluate((image) => {
+        if (image.complete && image.naturalWidth) return;
+        return new Promise((resolve, reject) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", reject, { once: true });
+        });
+      });
       await page.screenshot({ path: `outputs/refresh-${locale}-${width}.png` });
+      await page.locator(".project-feature").first().scrollIntoViewIfNeeded();
+      await page.locator(".project-feature img").first().evaluate((image) => {
+        if (image.complete && image.naturalWidth) return;
+        return new Promise((resolve, reject) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", reject, { once: true });
+        });
+      });
       await page
         .locator(".project-feature")
         .first()
         .screenshot({ path: `outputs/project-${locale}-${width}.png` });
-      await page.goto(`${base}/${locale}/team/`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/${locale}/team/`, { waitUntil: "load" });
       await page.screenshot({
         path: `outputs/team-${locale}-${width}.png`,
         fullPage: true,

@@ -88,7 +88,7 @@ export function TeamSection({ locale }: { locale: Locale }) {
     <section className="section people-section">
       <div className="work-heading">
         <p className="eyebrow">
-          06 / {locale === "mn" ? "МАНАЙ БАГ" : "OUR PEOPLE"}
+          05 / {locale === "mn" ? "МАНАЙ БАГ" : "OUR PEOPLE"}
         </p>
         <h2>
           {locale === "mn"
