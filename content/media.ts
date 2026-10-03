@@ -15,6 +15,26 @@ export interface MediaAsset {
 
 // Paths are relative to public/. Portrait permission is independent of name/role approval.
 export const media: Record<string, MediaAsset> = {
+  "portrait-erkhembayar": {
+    src: "/team/erkhembayar.jpg",
+    width: 1066,
+    height: 1280,
+    kind: "portrait",
+    position: "center",
+    alt: text("Б. Эрхэмбаярын хөрөг", "Portrait of Б. Эрхэмбаяр"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
+  "portrait-todgerel": {
+    src: "/team/todgerel.jpg",
+    width: 960,
+    height: 1280,
+    kind: "portrait",
+    position: "center 20%",
+    alt: text("Э. Тодгэрэлийн хөрөг", "Portrait of Э. Тодгэрэл"),
+    source: "Company-supplied staff image",
+    usageApproved: true,
+  },
   "portrait-baigal": {
     src: "/team/baigal.jpg",
     width: 853,

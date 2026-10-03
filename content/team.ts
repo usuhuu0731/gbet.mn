@@ -13,6 +13,7 @@ export interface TeamMember {
 export const team: TeamMember[] = [
   {
     id: "erkhembayar",
+    portraitId: "portrait-erkhembayar",
     name: text("Б. Эрхэмбаяр", "Б. Эрхэмбаяр"),
     role: text(
       "Захирал · Монгол Улсын зөвлөх инженер",
@@ -21,6 +22,7 @@ export const team: TeamMember[] = [
   },
   {
     id: "todgerel",
+    portraitId: "portrait-todgerel",
     name: text("Э. Тодгэрэл", "Э. Тодгэрэл"),
     role: text("Ерөнхий инженер", "Chief Engineer"),
   },
