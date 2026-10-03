@@ -17,7 +17,9 @@ export interface MediaAsset {
 export const media: Record<string, MediaAsset> = {
   "ikh-tamir": {
     src: "/projects/ikh-tamir.webp",
-    mobileSrc: "/projects/ikh-tamir-mobile.webp",
+    // A tall hero covers by height: the 900×562 derivative visibly upscales on phones.
+    // Keep the original's 1153 px height until an authorized portrait crop is supplied.
+    mobileSrc: "/projects/ikh-tamir.webp",
     width: 1846,
     height: 1153,
     kind: "photograph",

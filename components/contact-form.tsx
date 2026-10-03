@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
 import { services, site, type Locale } from "../content/site";
+import { useHydrated } from "../lib/use-hydrated";
 export function ContactForm({ locale: l }: { locale: Locale }) {
+  const hydrated = useHydrated();
   const [state, setState] = useState("");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -157,7 +159,7 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
           ? "Энэ хувилбар таны и-мэйл програмд ноорог нээнэ. Вэбсайт дээр мэдээлэл хадгалахгүй."
           : "This version opens a draft in your email application. It does not store your enquiry on this website."}
       </p>
-      <button className="button" disabled={busy}>
+      <button className="button" disabled={busy || !hydrated}>
         {site.contactEndpoint
           ? l === "mn"
             ? "Хүсэлт илгээх"

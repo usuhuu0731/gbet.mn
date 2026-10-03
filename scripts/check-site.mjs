@@ -47,6 +47,24 @@ try {
     viewport: { width: 1440, height: 900 },
     reducedMotion: "reduce",
   });
+  // A visitor must not lose the first filter click while client code is loading.
+  const delayedPage = await context.newPage();
+  await delayedPage.route("**/*.js", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await route.continue();
+  });
+  await delayedPage.goto(base + "/en/projects/", { waitUntil: "commit" });
+  const firstFilter = delayedPage.getByRole("button", {
+    name: "Rail infrastructure",
+    exact: true,
+  });
+  await firstFilter.waitFor({ state: "visible" });
+  assert.equal(await firstFilter.isDisabled(), true);
+  await firstFilter.click(); // Auto-waits until the control can handle the action.
+  await delayedPage.waitForFunction(
+    () => document.querySelectorAll(".project-card").length === 2,
+  );
+  await delayedPage.close();
   const page = await context.newPage();
   const errors = [],
     failed = [],
@@ -117,7 +135,11 @@ try {
   for (const locale of ["mn", "en"]) {
     await page.goto(`${base}/${locale}/team/`);
     assert.equal(await page.locator(".team-profile").count(), 6);
-    assert.equal(await page.locator(".team-portrait").count(), 6, "Portrait slots remain present when approved photographs replace placeholders");
+    assert.equal(
+      await page.locator(".team-portrait").count(),
+      6,
+      "Portrait slots remain present when approved photographs replace placeholders",
+    );
     assert.match(await page.locator("main").innerText(), /Б\. Эрхэмбаяр/);
     assert.match(await page.locator("main").innerText(), /С\. Өсөхбаяр/);
     await page.goto(`${base}/${locale}/contact/`);
@@ -154,7 +176,10 @@ try {
   );
   await page.keyboard.press("Escape");
   assert.equal(await page.locator("#expanded-menu").count(), 0);
-  assert.match(await page.locator(":focus").getAttribute("class"), /menu-button/);
+  assert.match(
+    await page.locator(":focus").getAttribute("class"),
+    /menu-button/,
+  );
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const locale of ["mn", "en"])
@@ -206,13 +231,16 @@ try {
       });
       await page.screenshot({ path: `outputs/refresh-${locale}-${width}.png` });
       await page.locator(".project-feature").first().scrollIntoViewIfNeeded();
-      await page.locator(".project-feature img").first().evaluate((image) => {
-        if (image.complete && image.naturalWidth) return;
-        return new Promise((resolve, reject) => {
-          image.addEventListener("load", resolve, { once: true });
-          image.addEventListener("error", reject, { once: true });
+      await page
+        .locator(".project-feature img")
+        .first()
+        .evaluate((image) => {
+          if (image.complete && image.naturalWidth) return;
+          return new Promise((resolve, reject) => {
+            image.addEventListener("load", resolve, { once: true });
+            image.addEventListener("error", reject, { once: true });
+          });
         });
-      });
       await page
         .locator(".project-feature")
         .first()

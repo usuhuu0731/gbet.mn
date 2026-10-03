@@ -8,7 +8,7 @@ Keep claim-by-claim evidence, dates, contradictions and publication decisions in
 
 Register approved imagery in `content/media.ts` under the project slug: public-relative path, measured width/height, photograph/rendering/concept kind, MN/EN alt text and crop position. Preserve the matching project's image record for its source/type reference. Keep concepts separate from actual project records. New image files require explicit rights for this website; never hotlink or copy reference-site pictures.
 
-Use WebP with a desktop source no wider than needed for its display; supply a smaller mobile hero source. Check crop at 320/390/768/1440 widths. Run `npm run build` and `npm run check:site` after replacing assets.
+Use WebP with enough source pixels for its display. For a full-height mobile hero, check the cropped region's effective resolution rather than choosing a source by width alone. The current hero retains its original source on phones because the smaller 900×562 derivative visibly upscaled; an authorized portrait crop can later reduce bytes while retaining detail. Check crop at 320/390/768/1440 widths. Run `npm run build` and `npm run check:site` after replacing assets.
 
 ## Team
 

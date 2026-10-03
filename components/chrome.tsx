@@ -4,8 +4,12 @@ import Link from "../lib/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { nav, site, type Locale } from "../content/site";
+import { useHydrated } from "../lib/use-hydrated";
 export function SiteHeader({ locale }: { locale: Locale }) {
-  const path = usePathname().replace(new RegExp(`^${basePath}(?=/|$)`), "").replace(/\/$/, "");
+  const hydrated = useHydrated();
+  const path = usePathname()
+    .replace(new RegExp(`^${basePath}(?=/|$)`), "")
+    .replace(/\/$/, "");
   const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -31,7 +35,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
         className="brand"
         aria-label={site.name[locale]}
       >
-        <img src={asset("/logo-mark.png")}  alt="" width="44" height="44" />
+        <img src={asset("/logo-mark.png")} alt="" width="44" height="44" />
         <span>
           GBET<small>CONSULTING ENGINEERS</small>
         </span>
@@ -77,6 +81,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           className="menu-button"
           aria-expanded={open}
           aria-controls="expanded-menu"
+          disabled={!hydrated}
           onClick={() => setOpen(!open)}
         >
           {open

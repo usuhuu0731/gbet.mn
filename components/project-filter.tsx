@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { categories, ui, type Locale, type Project } from "../content/site";
 import { ProjectCard } from "./projects";
+import { useHydrated } from "../lib/use-hydrated";
 export function ProjectFilter({
   projects,
   locale,
@@ -9,6 +10,7 @@ export function ProjectFilter({
   projects: Project[];
   locale: Locale;
 }) {
+  const hydrated = useHydrated();
   const [category, setCategory] = useState("all");
   const [year, setYear] = useState("all");
   const [location, setLocation] = useState("all");
@@ -37,6 +39,7 @@ export function ProjectFilter({
             <button
               key={value}
               aria-pressed={category === value}
+              disabled={!hydrated}
               onClick={() => setCategory(value)}
             >
               {label}
@@ -77,6 +80,7 @@ export function ProjectFilter({
               <select
                 aria-label={f.name}
                 value={f.value}
+                disabled={!hydrated}
                 onChange={(e) => f.set(e.target.value)}
               >
                 <option value="all">{ui.all[locale]}</option>
@@ -88,6 +92,7 @@ export function ProjectFilter({
           ))}
           <button
             className="reset"
+            disabled={!hydrated}
             onClick={() => {
               setCategory("all");
               setYear("all");
