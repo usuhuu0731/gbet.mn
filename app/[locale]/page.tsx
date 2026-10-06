@@ -64,13 +64,17 @@ export default async function Home({
               : "Consulting engineers for Mongolia’s bridges and infrastructure."}
           </p>
           <div className="hero-actions">
-            <Link className="hero-project-link" href={`/${l}/projects`}>
+            <Link className="button hero-project-link" href={`/${l}/projects`}>
               {l === "mn" ? "Бидний төслүүд" : "Discover our work"}
-              <span aria-hidden="true">↗</span>
+              <span className="cta-arrow" aria-hidden="true">
+                ↗
+              </span>
             </Link>
             <Link className="hero-contact-link" href={`/${l}/contact`}>
               {l === "mn" ? "Холбоо барих" : "Get in touch"}
-              <span aria-hidden="true">↗</span>
+              <span className="cta-arrow" aria-hidden="true">
+                ↗
+              </span>
             </Link>
           </div>
         </div>
@@ -139,7 +143,7 @@ export default async function Home({
             sizes="(max-width: 767px) 100vw, 55vw"
           />
         </div>
-        <div className="digital-copy">
+        <div className="digital-copy engineering-grid engineering-grid-dark">
           <p className="eyebrow">
             04 /{" "}
             {l === "mn" ? "ИНЖЕНЕРЧЛЭЛ / ЗУРАГ ТӨСӨЛ" : "ENGINEERING / DESIGN"}

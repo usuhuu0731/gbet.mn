@@ -67,29 +67,42 @@ export const ui = {
   source: text("Эх сурвалж", "Source"),
   record: text("Нийтийн бүртгэл", "Public record"),
 };
-export const services = [
+export interface Service {
+  id: string;
+  title: Localized;
+  copy: Localized;
+  projectSlugs?: string[];
+}
+export const services: Service[] = [
   {
+    id: "bridge-design",
     title: text("Гүүрийн зураг төсөл", "Bridge design"),
     copy: text(
       "Гүүрэн байгууламжийн инженерийн нарийвчилсан зураг төсөл.",
       "Detailed engineering design for bridge structures.",
     ),
+    projectSlugs: ["ongi-river", "orkhon-ongotstoi"],
   },
   {
+    id: "bridge-rehabilitation",
     title: text("Гүүрийн шинэчлэлт", "Bridge rehabilitation"),
     copy: text(
       "Одоо байгаа гүүрийг өргөтгөх, хүчитгэх ажлын зураг төсөл.",
       "Design for widening and strengthening existing bridges.",
     ),
+    projectSlugs: ["peace-bridge"],
   },
   {
+    id: "urban-road-structures",
     title: text("Хотын замын байгууламж", "Urban road structures"),
     copy: text(
       "Хотын авто зам, замын байгууламжийн зураг төсөл.",
       "Design of urban roads and associated structures.",
     ),
+    projectSlugs: ["naadamchid-connection"],
   },
   {
+    id: "tunnel-design",
     title: text("Туннелийн зураг төсөл", "Tunnel design"),
     copy: text(
       "Гүүр, туннелийн зураг төслийн тусгай зөвшөөрлийн хүрээ.",
@@ -97,6 +110,7 @@ export const services = [
     ),
   },
   {
+    id: "feasibility-studies",
     title: text("Техник-эдийн засгийн үндэслэл", "Feasibility studies"),
     copy: text(
       "Дэд бүтцийн техник-эдийн засгийн үндэслэл боловсруулах.",
@@ -104,11 +118,13 @@ export const services = [
     ),
   },
   {
+    id: "detailed-engineering-design",
     title: text("Инженерийн нарийвчилсан зураг", "Detailed engineering design"),
     copy: text(
       "Төслийн зорилгоос инженерийн зураг төслийн баримт бичиг хүртэл.",
       "Engineering design documentation for defined project requirements.",
     ),
+    projectSlugs: ["tuul-railway"],
   },
 ];
 export const categories = {

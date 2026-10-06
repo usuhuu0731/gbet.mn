@@ -29,6 +29,8 @@ try {
       "about/",
       "team/",
       "contact/",
+      "expertise/",
+      "innovation/",
       "projects/ikh-tamir/",
     ]) {
       await page.goto(
@@ -53,7 +55,23 @@ try {
         .click();
       await page.locator("#expanded-menu a").last().scrollIntoViewIfNeeded();
       assert.ok(await page.locator("#expanded-menu a").last().isVisible());
+      const menu = await page.locator("#expanded-menu").boundingBox();
+      assert.ok(
+        menu.y >= 0 && menu.y + menu.height <= viewport.height + 1,
+        "Menu stays inside the viewport",
+      );
       await page.keyboard.press("Escape");
+      if (route === "expertise/") {
+        await page
+          .locator(".expertise-grid details")
+          .nth(1)
+          .locator("summary")
+          .press("Enter");
+        assert.equal(
+          await page.locator(".expertise-grid details[open]").count(),
+          2,
+        );
+      }
       if (route === "projects/ikh-tamir/") {
         await page.locator(".gallery-open").click();
         const box = await page.locator("dialog").boundingBox();

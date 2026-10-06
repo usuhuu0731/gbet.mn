@@ -9,6 +9,10 @@ const runs = Number(process.env.QA_LAB_RUNS || 5);
 assert.ok(Number.isInteger(runs) && runs > 0);
 const tag = process.env.QA_REPORT_TAG || "after";
 assert.match(tag, /^[a-z0-9-]+$/);
+const interaction = process.env.QA_LAB_INTERACTION || "menu";
+assert.ok(["menu", "accordion"].includes(interaction));
+const measuredRoutes =
+  interaction === "accordion" ? ["expertise/"] : ["", "projects/ikh-tamir/"];
 const vitals = await readFile(
   new URL(
     "../node_modules/web-vitals/dist/web-vitals.iife.js",
@@ -26,7 +30,7 @@ const results = [];
 try {
   for (const mobile of [false, true])
     for (const locale of ["mn", "en"])
-      for (const route of ["", "projects/ikh-tamir/"]) {
+      for (const route of measuredRoutes) {
         for (let run = 1; run <= runs; run++) {
           // Fresh contexts and a disabled HTTP cache make before/after runs comparable.
           const context = await browser.newContext({
@@ -68,18 +72,24 @@ try {
             { waitUntil: "networkidle" },
           );
           await page.evaluate(() => document.fonts.ready);
-          await page
-            .getByRole("button", {
-              name: locale === "mn" ? "Цэс" : "Menu",
-              exact: true,
-            })
-            .click();
-          await page
-            .getByRole("button", {
-              name: locale === "mn" ? "Хаах" : "Close",
-              exact: true,
-            })
-            .click();
+          if (interaction === "accordion") {
+            const row = page.locator("#service-bridge-rehabilitation summary");
+            await row.click();
+            await row.click();
+          } else {
+            await page
+              .getByRole("button", {
+                name: locale === "mn" ? "Цэс" : "Menu",
+                exact: true,
+              })
+              .click();
+            await page
+              .getByRole("button", {
+                name: locale === "mn" ? "Хаах" : "Close",
+                exact: true,
+              })
+              .click();
+          }
           await page.waitForTimeout(600);
           const resources = await page.evaluate(() =>
             performance
@@ -116,7 +126,7 @@ try {
   const summaries = [];
   for (const device of ["desktop", "mobile"])
     for (const locale of ["mn", "en"])
-      for (const route of ["home", "projects/ikh-tamir/"]) {
+      for (const route of measuredRoutes.map((route) => route || "home")) {
         const group = results.filter(
           (r) =>
             r.device === device && r.locale === locale && r.route === route,
@@ -157,7 +167,9 @@ try {
         desktop: "1440x900; loopback; unthrottled",
         mobile: "390x844; 4x CPU; 150ms latency; 1.6Mbps down / 0.75Mbps up",
         interaction:
-          "Open and close navigation menu after fonts and network settle",
+          interaction === "accordion"
+            ? "Open and close native bridge rehabilitation disclosure after fonts and network settle"
+            : "Open and close navigation menu after fonts and network settle",
         results,
         summaries,
       },

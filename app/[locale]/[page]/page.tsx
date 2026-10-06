@@ -79,7 +79,9 @@ export default async function ContentPage({
   };
   return (
     <main id="main" className={`content-page page-${page}`}>
-      <section className={`page-heading heading-${page}`}>
+      <section
+        className={`page-heading heading-${page}${page === "innovation" ? " engineering-grid" : ""}`}
+      >
         <p className="eyebrow">GBET / {n.name[l]}</p>
         <h1>{titles[page][l]}</h1>
         {["about", "expertise"].includes(page) && <p>{site.description[l]}</p>}

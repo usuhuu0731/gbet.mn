@@ -5,7 +5,12 @@ import { mkdir, readFile, writeFile, readdir } from "node:fs/promises";
 import { once } from "node:events";
 import { createStaticServer } from "./serve-static.mjs";
 import { basePath, origin } from "./site-config.mjs";
-import { expectedRoutes, slugs } from "./expected-routes.mjs";
+import {
+  expectedRoutes,
+  slugs,
+  serviceRecords,
+  projectFacts,
+} from "./expected-routes.mjs";
 
 await mkdir("outputs", { recursive: true });
 const sitemap = await readFile("site/sitemap.xml", "utf8");
@@ -156,6 +161,33 @@ try {
       const image = await context.request.get(base + og.slice(origin.length));
       assert.equal(image.status(), 200, "Exported project OG asset exists");
       assert.match(image.headers()["content-type"], /^image\//);
+      const project = projectFacts.find((p) => route.endsWith(`/${p.slug}/`));
+      const highlights = [project.length, project.bridgeType?.[locale]].filter(
+        Boolean,
+      );
+      assert.equal(
+        await page.locator(".facts-highlights").count(),
+        highlights.length ? 1 : 0,
+        "No empty highlights rail",
+      );
+      assert.deepEqual(
+        await page.locator(".facts-highlights dd").allTextContents(),
+        highlights,
+      );
+      const definitions = await page
+        .locator(".project-detail aside dt")
+        .allTextContents();
+      assert.equal(
+        definitions.filter((t) => t === (locale === "mn" ? "Урт" : "Length"))
+          .length,
+        project.length ? 1 : 0,
+      );
+      assert.equal(
+        definitions.filter(
+          (t) => t === (locale === "mn" ? "Бүтцийн төрөл" : "Structure type"),
+        ).length,
+        project.bridgeType ? 1 : 0,
+      );
     }
   }
   const noJS = await browser.newContext({
@@ -182,6 +214,49 @@ try {
       await staticPage.locator(".project-card").count(),
       slugs.length,
     );
+    for (const route of ["", "expertise/"]) {
+      await staticPage.goto(`${base}/${locale}/${route}`);
+      const details = staticPage.locator(".expertise-grid details");
+      assert.equal(await details.count(), serviceRecords.length);
+      assert.equal(
+        await staticPage.locator(".expertise-grid details[open]").count(),
+        1,
+      );
+      for (const service of serviceRecords) {
+        const item = staticPage.locator(`#service-${service.id}`);
+        assert.ok(
+          (await item.locator("summary").innerText()).includes(
+            service.title[locale],
+          ),
+        );
+        assert.equal(
+          await item.locator(".service-panel p").textContent(),
+          service.copy[locale],
+          "Approved copy is present without JS",
+        );
+        const links = await item
+          .locator(".service-projects a")
+          .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href")));
+        assert.deepEqual(
+          links,
+          service.projectSlugs.map(
+            (slug) => `${basePath}/${locale}/projects/${slug}/`,
+          ),
+        );
+      }
+      const first = details.nth(0),
+        second = details.nth(1);
+      await first.locator("summary").press("Enter");
+      assert.equal(await first.getAttribute("open"), null);
+      await second.locator("summary").press("Space");
+      assert.equal(await second.locator(".service-panel").isVisible(), true);
+      await first.locator("summary").press("Space");
+      assert.equal(
+        await staticPage.locator(".expertise-grid details[open]").count(),
+        2,
+        "Multiple native rows stay open",
+      );
+    }
     await staticPage.close();
   }
   await noJS.close();
@@ -315,6 +390,10 @@ try {
     await page.goto(`${base}/${locale}/contact/`);
     await page.locator(".contact-form .button").click();
     assert.equal(await page.locator(".field-error").count(), 5);
+    assert.equal(
+      await page.locator(".form-status").getAttribute("data-feedback"),
+      "error",
+    );
     assert.equal(await page.locator(":focus").getAttribute("name"), "name");
   }
   await page.goto(base + "/en/contact/");
@@ -335,6 +414,11 @@ try {
     document.querySelector(".form-status").textContent.includes("draft opens"),
   );
   assert.equal(await page.locator(".field-error").count(), 0);
+  assert.equal(
+    await page.locator(".form-status").getAttribute("data-feedback"),
+    "info",
+    "Draft is information, not delivery success",
+  );
   await page.goto(base + "/en/");
   await page.keyboard.press("Tab");
   assert.equal(await page.locator(":focus").getAttribute("href"), "#main");
@@ -343,6 +427,12 @@ try {
   assert.equal(
     await page.locator("#expanded-menu").getByRole("link").count(),
     9,
+  );
+  assert.equal(
+    await page
+      .locator('#expanded-menu a[aria-current="page"]')
+      .getAttribute("href"),
+    `${basePath}/en/`,
   );
   await page.keyboard.press("Escape");
   assert.equal(await page.locator("#expanded-menu").count(), 0);
@@ -416,6 +506,9 @@ try {
         "about",
         "projects",
         "projects/sonsgolon",
+        "projects/ikh-tamir",
+        "expertise",
+        "innovation",
         "contact",
       ]) {
         await page.goto(`${base}/${locale}/${route ? route + "/" : ""}`);
@@ -427,7 +520,14 @@ try {
           overflow.push(`${width}/${locale}/${route}`);
         if (
           [390, 1440].includes(width) &&
-          ["", "team", "contact"].includes(route)
+          [
+            "",
+            "team",
+            "contact",
+            "expertise",
+            "innovation",
+            "projects/ikh-tamir",
+          ].includes(route)
         ) {
           const result = await new AxeBuilder({ page })
             .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
@@ -441,6 +541,14 @@ try {
               nodes: v.nodes.map((n) => n.target),
             })),
           });
+        }
+        if (["", "expertise"].includes(route)) {
+          for (const target of await page
+            .locator(".expertise-grid summary")
+            .all()) {
+            const box = await target.boundingBox();
+            assert.ok(box.width >= 44 && box.height >= 44);
+          }
         }
       }
   }
@@ -486,7 +594,14 @@ try {
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const route of ["", "team", "contact"]) {
+  for (const route of [
+    "",
+    "team",
+    "contact",
+    "expertise",
+    "innovation",
+    "projects/ikh-tamir",
+  ]) {
     await page.goto(`${base}/mn/${route ? route + "/" : ""}`);
     await page.evaluate(
       () => (document.documentElement.style.fontSize = "200%"),
@@ -499,6 +614,53 @@ try {
       `200% ${route}`,
     );
   }
+  const menuChecks = [];
+  for (const locale of ["mn", "en"])
+    for (const test of [
+      { width: 320, height: 568, textZoom: false },
+      { width: 390, height: 844, textZoom: true },
+      { width: 768, height: 900, textZoom: false },
+      { width: 1023, height: 900, textZoom: false },
+      { width: 1024, height: 900, textZoom: false },
+    ]) {
+      await page.setViewportSize({ width: test.width, height: test.height });
+      await page.goto(`${base}/${locale}/expertise/`);
+      await page.evaluate(() => document.fonts.ready);
+      if (test.textZoom)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "200%"),
+        );
+      await page
+        .getByRole("button", {
+          name: locale === "mn" ? "Цэс" : "Menu",
+          exact: true,
+        })
+        .click();
+      const menu = page.locator("#expanded-menu");
+      await page.waitForFunction(() => {
+        const box = document
+          .querySelector("#expanded-menu")
+          .getBoundingClientRect();
+        return box.bottom <= innerHeight + 1;
+      });
+      const columns = await menu.evaluate(
+        (node) => getComputedStyle(node).gridTemplateColumns.split(" ").length,
+      );
+      assert.equal(columns, test.width <= 767 ? 1 : test.width <= 1023 ? 2 : 3);
+      await menu.locator("a").last().focus();
+      const last = await menu.locator("a").last().boundingBox();
+      assert.ok(
+        last.y >= 0 && last.y + last.height <= test.height + 1,
+        "Last menu link is fully reachable",
+      );
+      assert.equal(
+        await menu.locator('a[aria-current="page"]').getAttribute("href"),
+        `${basePath}/${locale}/expertise/`,
+      );
+      await page.keyboard.press("Escape");
+      assert.equal(await menu.count(), 0);
+      menuChecks.push({ locale, ...test, columns });
+    }
   await writeFile(
     "outputs/site-check.json",
     JSON.stringify(
@@ -510,6 +672,7 @@ try {
         errors,
         failed,
         forms: "validated; mailto draft only",
+        menuChecks,
       },
       null,
       2,

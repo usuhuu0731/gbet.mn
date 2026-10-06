@@ -6,6 +6,13 @@ import { useState, useEffect, useRef } from "react";
 import { nav, site, projects, type Locale } from "../content/site";
 import { readFilters, filterQuery } from "../lib/project-filters";
 import { useHydrated } from "../lib/use-hydrated";
+function fitMenuBelowHeader(header: HTMLElement | null) {
+  if (!header) return;
+  header.style.setProperty(
+    "--menu-offset",
+    `${Math.max(0, header.getBoundingClientRect().bottom)}px`,
+  );
+}
 export function SiteHeader({ locale }: { locale: Locale }) {
   const hydrated = useHydrated();
   const path = usePathname()
@@ -31,6 +38,15 @@ export function SiteHeader({ locale }: { locale: Locale }) {
   const headerRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!open) return;
+    const syncBounds = () => fitMenuBelowHeader(headerRef.current);
+    syncBounds();
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(syncBounds);
+    if (headerRef.current) observer?.observe(headerRef.current);
+    window.addEventListener("resize", syncBounds);
+    window.addEventListener("scroll", syncBounds, { passive: true });
     const close = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -40,7 +56,12 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       }
     };
     window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
+    return () => {
+      window.removeEventListener("keydown", close);
+      window.removeEventListener("resize", syncBounds);
+      window.removeEventListener("scroll", syncBounds);
+      observer?.disconnect();
+    };
   }, [open]);
   return (
     <header
@@ -107,7 +128,10 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           aria-expanded={open}
           aria-controls="expanded-menu"
           disabled={!hydrated}
-          onClick={() => setOpen(!open)}
+          onClick={() => {
+            if (!open) fitMenuBelowHeader(headerRef.current);
+            setOpen(!open);
+          }}
         >
           {open
             ? locale === "mn"
@@ -129,9 +153,14 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             <Link
               key={n.path}
               href={`/${locale}${n.path ? "/" + n.path : ""}`}
+              aria-current={
+                path === `/${locale}${n.path ? "/" + n.path : ""}`
+                  ? "page"
+                  : undefined
+              }
               onClick={() => setOpen(false)}
             >
-              <small>0{i + 1}</small>
+              <small aria-hidden="true">0{i + 1}</small>
               {n.name[locale]}
             </Link>
           ))}

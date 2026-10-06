@@ -38,10 +38,10 @@ Before/after production captures are in `outputs/before/` and `outputs/after/`: 
 
 ## Five-run performance comparison
 
-| Mobile LCP median | Before | Final |
-|---|---:|---:|
-| MN home | 3736 ms | 2900 ms |
-| EN home | 3752 ms | 2796 ms |
+| Mobile LCP median   |  Before |   Final |
+| ------------------- | ------: | ------: |
+| MN home             | 3736 ms | 2900 ms |
+| EN home             | 3752 ms | 2796 ms |
 | MN Ikh Tamir detail | 4656 ms | 2820 ms |
 | EN Ikh Tamir detail | 4416 ms | 2772 ms |
 
@@ -56,3 +56,19 @@ Firefox, Safari/WebKit, physical phones, native browser-toolbar 200% zoom and fi
 ## Authorized publication and rollback
 
 The actual previous live SHA was verified through GitHub's successful Pages deployment before publication. Use the tested custom-domain export, the existing main-triggered Pages workflow, and confirm the deployed SHA plus a live smoke test. Publication is complete only after these checks pass. Revert the release commit to roll back, then rebuild/test both export configurations and confirm the new deployment. Preserve user scripts and private records; do not reset/clean the checkout to roll back local edits.
+
+## UI refinement review — 2026-10-06
+
+The editorial redesign was subsequently published as `a83d557c713d77a3ae5eb0a8cfcbb2bebece27f1` and verified live. The new UI work begins at that exact release on `design/ui-refinement`. It was delivered as an uncommitted local review before the user's separate 2026-10-06 deployment request. All six pre-existing untracked scripts remain untouched. Package/dependency declarations, lockfile, media sources, team data and portrait composition are unchanged; all four MN/EN 390/1440 team-grid captures are byte-identical before/after.
+
+The implemented scope is five UI refinements: native service disclosures with stable IDs/project associations, approved length/type highlights without duplicate facts, decorative static engineering grids, consistent CTA/form feedback and larger numbered navigation. All service descriptions render into static HTML; no library, animation framework, remote asset or backend was added. Approved copy and metadata are preserved. The menu was corrected after a targeted 200% text test showed that using only the nominal header height let its panel extend below the viewport. It now follows the actual header bounds while open and removes its observer/listeners when closed.
+
+Validation passes ESLint, TypeScript, production build and media checks (nine unchanged originals, their derivatives, EXIF stripping and caching). Root and repository-prefix exports each pass all 36 authored localized routes, 25 axe cases, 10 additional menu breakpoint/short-viewport/200% text checks, and 14 emulated 200% layout cases. Coverage includes native accordion Enter/Space, independently open rows without JavaScript, authored service IDs/slugs, all project highlight presence/absence and duplicate-label checks, localized form error/information states, source exclusions, metadata/assets, nested refresh/404, query filters, language switching, focus/Escape and reduced motion. This is not a WCAG certification.
+
+Before/after captures are in `outputs/ui-before/` and `outputs/ui-after/`, 40 images each: home, services, engineering, detail/facts, menu, contact/error and unchanged team. Representative desktop/mobile MN/EN views were visually reviewed. The first baseline capture log incorrectly printed 36; directory inventory confirms 40 images, and the capturer now reports the actual counter. Reports/screenshots and the baseline snapshot remain ignored local artifacts.
+
+The fresh 40-before/40-after performance batches meet the maximum 5% LCP median regression gate in all eight scenarios; the largest increase is +3.1% in desktop MN home. Mobile home/detail medians remain 2592–2776ms, above the 2500ms target. Twenty separate native disclosure loads were measured after the change. All measured final CLS values are 0; observed menu/disclosure INP is 24–40ms, with missing desktop samples kept unavailable. PERFORMANCE contains median/min/max, sample counts and raw evidence. No claim of statistical significance or field CWV is made.
+
+Evidence files: `outputs/ui-site-check-root.json`, `outputs/ui-site-check-prefix.json`, `outputs/ui-zoom-root.json`, `outputs/ui-zoom-prefix.json`, `outputs/ui-media-check.json`, `outputs/ui-performance-comparison.json` and the three `performance-ui-*.json` batches. Firefox/WebKit, physical phones, native browser-toolbar zoom, screen-reader behavior and live-host smoke were not tested for this local refinement. Native toolbar zoom is distinguished from the completed 200% text enlargement and equivalent viewport/DPR checks. No new image or staff approval is needed for the implemented UI; existing missing Latin spellings, creator credits and director-message approvals remain outside its scope.
+
+The user separately requested publication on 2026-10-06. Before release, GitHub main and the successful live Pages deployment were confirmed at `a83d557c713d77a3ae5eb0a8cfcbb2bebece27f1` (run `37127310713`, deployment `6828373839`). Only reviewed UI/documentation/QA files are included; private artifacts and the six user scripts stay outside the commit. Confirm CI, deployment and a live smoke test before reporting publication complete; retain the release evidence in ignored `outputs/deployment-release-ui.json`. Revert the UI release commit to roll back; preserve user scripts and private records. Native Next/Vercel compatibility is not asserted, and no database or hosting migration is required.

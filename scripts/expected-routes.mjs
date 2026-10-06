@@ -47,6 +47,60 @@ function additions(node) {
 }
 additions(source);
 export const slugs = projectNodes.map((n) => property(n, "slug"));
+function initializer(node, name) {
+  return node.properties.find((p) => p.name?.getText(source) === name)
+    ?.initializer;
+}
+function localized(node, name) {
+  const value = initializer(node, name);
+  if (!value) return undefined;
+  assert.ok(
+    ts.isCallExpression(value) && value.expression.getText(source) === "text",
+  );
+  assert.equal(value.arguments.length, 2);
+  assert.ok(value.arguments.every(ts.isStringLiteral));
+  return { mn: value.arguments[0].text, en: value.arguments[1].text };
+}
+export const serviceRecords = array("services").map((node) => {
+  const links = initializer(node, "projectSlugs");
+  if (links) {
+    assert.ok(ts.isArrayLiteralExpression(links));
+    assert.ok(links.elements.every(ts.isStringLiteral));
+  }
+  return {
+    id: property(node, "id"),
+    title: localized(node, "title"),
+    copy: localized(node, "copy"),
+    projectSlugs: links ? links.elements.map((n) => n.text) : [],
+  };
+});
+assert.equal(
+  new Set(serviceRecords.map((s) => s.id)).size,
+  serviceRecords.length,
+  "Unique service IDs",
+);
+for (const service of serviceRecords) {
+  assert.match(service.id, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  assert.ok(
+    service.title?.mn &&
+      service.title?.en &&
+      service.copy?.mn &&
+      service.copy?.en,
+  );
+  assert.ok(
+    service.projectSlugs.every((slug) => slugs.includes(slug)),
+    "Services link to authored projects",
+  );
+}
+export const projectFacts = projectNodes.map((node) => {
+  const length = initializer(node, "length");
+  if (length) assert.ok(ts.isStringLiteral(length));
+  return {
+    slug: property(node, "slug"),
+    length: length?.text,
+    bridgeType: localized(node, "bridgeType"),
+  };
+});
 export const expectedRoutes = locales
   .flatMap((locale) => [
     ...pages.map((p) => `/${locale}/${p ? p + "/" : ""}`),

@@ -27,29 +27,33 @@ export function SectionHeading({
   );
 }
 export function ExpertiseGrid({ locale }: { locale: Locale }) {
-  const examples: Record<number, string[]> = {
-    0: ["ongi-river", "orkhon-ongotstoi"],
-    1: ["peace-bridge"],
-    2: ["naadamchid-connection"],
-    5: ["tuul-railway"],
-  };
   return (
     <div className="expertise-grid">
       {services.map((s, i) => (
-        <article key={i}>
-          <span className="section-number">0{i + 1}</span>
-          <h3>{s.title[locale]}</h3>
-          <p>{s.copy[locale]}</p>
-          {examples[i] && (
-            <div className="service-projects">
-              {examples[i].map((slug) => (
-                <Link key={slug} href={`/${locale}/projects/${slug}`}>
-                  {projects.find((p) => p.slug === slug)?.name[locale]} ↗
-                </Link>
-              ))}
-            </div>
-          )}
-        </article>
+        <details key={s.id} id={`service-${s.id}`} open={i === 0}>
+          <summary>
+            <span className="section-number" aria-hidden="true">
+              0{i + 1}
+            </span>
+            <span className="service-title">{s.title[locale]}</span>
+            <span className="service-toggle" aria-hidden="true" />
+          </summary>
+          <div className="service-panel">
+            <p>{s.copy[locale]}</p>
+            {!!s.projectSlugs?.length && (
+              <div className="service-projects">
+                {s.projectSlugs.map((slug) => {
+                  const project = projects.find((p) => p.slug === slug);
+                  return project ? (
+                    <Link key={slug} href={`/${locale}/projects/${slug}`}>
+                      {project.name[locale]} <span aria-hidden="true">↗</span>
+                    </Link>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
+        </details>
       ))}
     </div>
   );
@@ -144,6 +148,9 @@ export function ContactCTA({ locale }: { locale: Locale }) {
       </h2>
       <Link href={`/${locale}/contact`} className="button">
         {locale === "mn" ? "Төсөл эхлүүлэх" : "Start a conversation"}
+        <span className="cta-arrow" aria-hidden="true">
+          ↗
+        </span>
       </Link>
       <a className="text-link" href={`mailto:${site.email}`}>
         {site.email}

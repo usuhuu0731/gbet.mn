@@ -48,8 +48,6 @@ export default async function Detail({
     [text("ГБЭТ-ийн үүрэг", "GBET role"), p.role?.[l]],
     [text("Бүртгэлийн он", "Record year"), p.year ? String(p.year) : undefined],
     [text("Төлөв", "Status"), p.status[l]],
-    [text("Урт", "Length"), p.length],
-    [text("Бүтцийн төрөл", "Structure type"), p.bridgeType?.[l]],
     [text("Үйлчилгээ", "Services"), categories[p.category][l]],
   ];
   return (
@@ -88,6 +86,22 @@ export default async function Detail({
           <p className="eyebrow">
             {l === "mn" ? "ТӨСЛИЙН МЭДЭЭЛЭЛ" : "PROJECT FACTS"}
           </p>
+          {(p.length || p.bridgeType) && (
+            <dl className="facts-highlights">
+              {p.length && (
+                <div className="highlight-length">
+                  <dt>{l === "mn" ? "Урт" : "Length"}</dt>
+                  <dd>{p.length}</dd>
+                </div>
+              )}
+              {p.bridgeType && (
+                <div className="highlight-type">
+                  <dt>{l === "mn" ? "Бүтцийн төрөл" : "Structure type"}</dt>
+                  <dd>{p.bridgeType[l]}</dd>
+                </div>
+              )}
+            </dl>
+          )}
           <dl className="facts">
             {facts
               .filter(([, value]) => value)

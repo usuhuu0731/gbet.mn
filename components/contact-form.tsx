@@ -2,9 +2,16 @@
 import { useState } from "react";
 import { services, site, type Locale } from "../content/site";
 import { useHydrated } from "../lib/use-hydrated";
+type FormFeedback = {
+  kind: "idle" | "error" | "info" | "pending" | "success";
+  message: string;
+};
 export function ContactForm({ locale: l }: { locale: Locale }) {
   const hydrated = useHydrated();
-  const [state, setState] = useState("");
+  const [feedback, setFeedback] = useState<FormFeedback>({
+    kind: "idle",
+    message: "",
+  });
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const labels = {
@@ -33,11 +40,13 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
           : "Enter a valid email address.";
     setErrors(next);
     if (Object.keys(next).length) {
-      setState(
-        l === "mn"
-          ? "Тэмдэглэсэн талбаруудыг шалгана уу."
-          : "Please check the marked fields.",
-      );
+      setFeedback({
+        kind: "error",
+        message:
+          l === "mn"
+            ? "Тэмдэглэсэн талбаруудыг шалгана уу."
+            : "Please check the marked fields.",
+      });
       form
         .querySelector<HTMLElement>(`[name="${Object.keys(next)[0]}"]`)
         ?.focus();
@@ -48,15 +57,20 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
         .map(([k, v]) => `${labels[k as keyof typeof labels]}: ${v}`)
         .join("\n\n");
       window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(`${data.organization} / ${data.type}`)}&body=${encodeURIComponent(body)}`;
-      setState(
-        l === "mn"
-          ? "И-мэйл програмд ноорог нээгдэнэ. Илгээх үйлдлийг тэндээс гүйцэтгэнэ үү."
-          : "A draft opens in your email application. Send it from there.",
-      );
+      setFeedback({
+        kind: "info",
+        message:
+          l === "mn"
+            ? "И-мэйл програмд ноорог нээгдэнэ. Илгээх үйлдлийг тэндээс гүйцэтгэнэ үү."
+            : "A draft opens in your email application. Send it from there.",
+      });
       return;
     }
     setBusy(true);
-    setState(l === "mn" ? "Илгээж байна…" : "Sending…");
+    setFeedback({
+      kind: "pending",
+      message: l === "mn" ? "Илгээж байна…" : "Sending…",
+    });
     try {
       const res = await fetch(site.contactEndpoint, {
         method: "POST",
@@ -64,16 +78,20 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
         body: JSON.stringify({ ...data, locale: l }),
       });
       if (!res.ok) throw new Error("Request failed");
-      setState(
-        l === "mn" ? "Хүсэлт хүлээн авлаа." : "Your enquiry was received.",
-      );
+      setFeedback({
+        kind: "success",
+        message:
+          l === "mn" ? "Хүсэлт хүлээн авлаа." : "Your enquiry was received.",
+      });
       form.reset();
     } catch {
-      setState(
-        l === "mn"
-          ? "Илгээж чадсангүй. И-мэйлээр холбогдоно уу."
-          : "Unable to send. Please contact us by email.",
-      );
+      setFeedback({
+        kind: "error",
+        message:
+          l === "mn"
+            ? "Илгээж чадсангүй. И-мэйлээр холбогдоно уу."
+            : "Unable to send. Please contact us by email.",
+      });
     } finally {
       setBusy(false);
     }
@@ -127,7 +145,7 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
             {l === "mn" ? "Сонгох" : "Select a project type"}
           </option>
           {services.map((s) => (
-            <option key={s.title.en}>{s.title[l]}</option>
+            <option key={s.id}>{s.title[l]}</option>
           ))}
         </select>
         {errors.type && (
@@ -167,9 +185,12 @@ export function ContactForm({ locale: l }: { locale: Locale }) {
           : l === "mn"
             ? "И-мэйл ноорог бэлтгэх"
             : "Prepare email draft"}
+        <span className="cta-arrow" aria-hidden="true">
+          ↗
+        </span>
       </button>
-      <p role="status" className="form-status">
-        {state}
+      <p role="status" className="form-status" data-feedback={feedback.kind}>
+        {feedback.message}
       </p>
       <a className="text-link" href={`mailto:${site.email}`}>
         {site.email}
