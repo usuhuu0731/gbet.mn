@@ -1,0 +1,46 @@
+/* Measure the real labels without adding a second, hidden set of links.
+   Absolute placement keeps header geometry stable while fonts load. */
+@media (min-width: 1280px) {
+  .header .desktop-nav {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    gap: clamp(24px, 2.4vw, 40px);
+    width: max-content;
+    visibility: hidden;
+    transform: translate(-50%, -50%);
+  }
+
+  .header .desktop-nav[data-fits="true"] {
+    visibility: visible;
+  }
+
+  .header .desktop-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 4px 2px;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    transition: color var(--motion);
+  }
+
+  .header .desktop-nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 7px;
+    text-decoration-thickness: 1px;
+  }
+
+  .header .desktop-nav a:where(:hover, :focus-visible) {
+    color: var(--blue);
+  }
+
+  .header-home .desktop-nav a:where(:hover, :focus-visible),
+  .menu-open .desktop-nav a:where(:hover, :focus-visible) {
+    color: #b8ccff;
+  }
+}

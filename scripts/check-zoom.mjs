@@ -31,7 +31,9 @@ try {
       "contact/",
       "expertise/",
       "innovation/",
+      "projects/",
       "projects/ikh-tamir/",
+      "projects/ongi-river/",
     ]) {
       await page.goto(
         `http://127.0.0.1:${server.address().port}${basePath}/${locale}/${route}`,
@@ -61,6 +63,7 @@ try {
         "Menu stays inside the viewport",
       );
       await page.keyboard.press("Escape");
+      assert.equal(await page.locator(".desktop-nav").isVisible(), false);
       if (route === "expertise/") {
         await page
           .locator(".expertise-grid details")
@@ -84,8 +87,20 @@ try {
         assert.ok(await page.locator(".dialog-close").isVisible());
         await page.keyboard.press("Escape");
       }
+      if (route === "innovation/") {
+        const controls = page.locator(
+          ".bridge-schematic [data-bridge-control]",
+        );
+        assert.equal(await controls.count(), 3);
+        for (const control of await controls.all()) {
+          await control.scrollIntoViewIfNeeded();
+          const box = await control.boundingBox();
+          assert.ok(box.x >= 0 && box.x + box.width <= viewport.width + 1);
+          assert.ok(box.height >= 44 && box.width >= 44);
+        }
+      }
       await page.screenshot({
-        path: `outputs/zoom-${tag}-${locale}-${route ? route.split("/")[0] : "home"}.png`,
+        path: `outputs/zoom-${tag}-${locale}-${route ? route.replace(/\/$/, "").replaceAll("/", "-") : "home"}.png`,
       });
       checks.push({ locale, route, overflow: false });
     }

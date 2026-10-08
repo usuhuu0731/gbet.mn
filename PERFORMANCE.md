@@ -1,5 +1,62 @@
 # GBET performance records
 
+## Editorial engineering — 2026-10-08
+
+Fresh baseline source: `761a1bd92071aa40892024bd25480a6a570cb65b`, exported before edits into `outputs/editorial-baseline-site/`. Both batches used the recorded runtime **Node v24.14.0**, Chromium **153.0.8010.12**, Windows, the same `https://gbet.mn` export, gzip strict local server, disabled cache/fresh contexts and reduced motion. Desktop: 1440×900, loopback, unthrottled. Mobile: 390×844, DPR 1, 4× CPU, 150ms latency, 1.6Mbps down / 0.75Mbps up. No build or browser QA ran concurrently with measurement. These are controlled local laboratory observations, not field Core Web Vitals or statistical proof of improvement.
+
+Each device/locale/route has five before and five after loads: **40 before + 40 after**, plus **20 after-only schematic loads**. Menu interaction remains identical to the baseline. The comparison script checks matching runtime/browser/configuration and sample counts. The first baseline desktop MN home sample was 4592ms; it is retained in the raw data and range, not discarded.
+
+### Home/detail LCP — ms, median (min–max)
+
+| Device | Locale / route | Baseline | Current | Median change |
+| --- | --- | ---: | ---: | ---: |
+| Desktop | MN home | 136 (132–4592) | 136 (120–512) | 0.0% |
+| Desktop | MN Ikh Tamir | 140 (120–160) | 108 (104–120) | −22.9% |
+| Desktop | EN home | 152 (124–164) | 128 (120–136) | −15.8% |
+| Desktop | EN Ikh Tamir | 132 (108–168) | 104 (92–136) | −21.2% |
+| Mobile | MN home | 2800 (2664–2816) | 2736 (2712–2796) | −2.3% |
+| Mobile | MN Ikh Tamir | 2600 (2596–2624) | 2596 (2572–2608) | −0.2% |
+| Mobile | EN home | 2728 (2704–2744) | 2712 (2688–2784) | −0.6% |
+| Mobile | EN Ikh Tamir | 2592 (2576–2612) | 2588 (2540–2604) | −0.2% |
+
+**All eight cases pass the maximum 5% median regression gate.** The absolute 2500ms LCP target remains unmet in all four mobile home/detail cases. Desktop differences and small mobile changes should not be generalized to real hosting or devices. Source image resolution and existing framework/runtime remain unchanged.
+
+### Current sampled menu INP — ms
+
+| Device | Locale / route | Median (min–max) | Samples |
+| --- | --- | ---: | ---: |
+| Desktop | MN home | 32 (32–32) | 3/5 |
+| Desktop | MN Ikh Tamir | Unavailable | 0/5 |
+| Desktop | EN home | 32 (32–32) | 1/5 |
+| Desktop | EN Ikh Tamir | Unavailable | 0/5 |
+| Mobile | MN home | 40 (24–40) | 5/5 |
+| Mobile | MN Ikh Tamir | 32 (24–40) | 5/5 |
+| Mobile | EN home | 24 (24–56) | 5/5 |
+| Mobile | EN Ikh Tamir | 32 (24–40) | 5/5 |
+
+Every measured current home/detail CLS value is **0**. All observed menu INP samples are within 200ms; missing samples remain null, not zero.
+
+### Schematic interaction — after-only, five loads per case
+
+These runs visit `/innovation/` and select piers → foundations → deck, checking the selected control and SVG state. They are a different route and interaction, not a before/after comparison.
+
+| Device / locale | LCP ms, median (min–max) | INP ms, median (min–max) | INP samples | CLS max |
+| --- | ---: | ---: | ---: | ---: |
+| Desktop MN | 92 (92–204) | 32 (32–48) | 5/5 | 0 |
+| Desktop EN | 88 (76–108) | 32 (32–32) | 5/5 | 0 |
+| Mobile MN | 2620 (2596–2628) | 24 (24–24) | 5/5 | 0 |
+| Mobile EN | 2616 (2572–2700) | 24 (24–24) | 5/5 | 0 |
+
+Schematic sampled interaction and CLS meet their 200ms / 0.1 targets. Its mobile LCP also exceeds 2500ms. This measurement does not certify all interactions or a real-user session.
+
+Raw evidence: `outputs/performance-editorial-before.json`, `outputs/performance-editorial-after.json`, `outputs/performance-editorial-schematic.json`, `outputs/editorial-performance-comparison.json` and their `editorial-*-performance.log` files. Reproduce the comparison with:
+
+```sh
+node scripts/compare-ui-performance.mjs outputs/performance-editorial-before.json outputs/performance-editorial-after.json outputs/editorial-performance-comparison.json
+```
+
+Use `QA_REPORT_TAG=editorial-after QA_LAB_RUNS=5` for the default menu batch and add `QA_LAB_INTERACTION=schematic` with a different tag for the diagram. Clear that interaction variable before a home/detail comparison. Preserve fresh baselines and distinct report paths; do not overwrite an unfavorable batch or cherry-pick individual runs. All reports remain ignored local artifacts. Publication was separately requested on 2026-10-08; deployment/live smoke evidence belongs in `outputs/deployment-release-editorial.json` and does not turn these lab measurements into field results.
+
 ## UI refinement — 2026-10-06
 
 The new comparison uses a fresh production baseline from deployed source `a83d557c713d77a3ae5eb0a8cfcbb2bebece27f1`, captured before the UI edits. It does not reuse the earlier October 3 batch. Both new batches used Node v24.19.0, Chromium 153.0.8010.12, the same custom-domain export, fresh contexts/disabled cache, reduced motion, gzip strict local static server, and the fixed desktop/mobile conditions below. No build or browser QA ran in parallel with measurement. Each case has five before and five after loads: 40 per batch, 80 total, plus 20 separate after-only native-accordion loads.

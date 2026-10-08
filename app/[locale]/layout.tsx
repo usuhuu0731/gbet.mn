@@ -5,6 +5,7 @@ import { SiteHeader } from "../../components/chrome";
 import { SiteFooter } from "../../components/footer";
 import { site, locales, type Locale } from "../../content/site";
 import "../globals.css";
+import "../../components/header-navigation.css";
 export async function generateMetadata({
   params,
 }: {

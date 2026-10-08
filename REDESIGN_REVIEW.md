@@ -1,4 +1,40 @@
-# Local editorial redesign review — 2026-10-03
+# Editorial engineering review — 2026-10-08
+
+## Current local delivery
+
+Branch `design/editorial-engineering` starts at `761a1bd92071aa40892024bd25480a6a570cb65b`. The changes were first delivered uncommitted for local review. The user separately authorized deployment on 2026-10-08. Pre-release GitHub checks confirmed main and the successful live Pages deployment at that same SHA (workflow `37425065164`, deployment `6877484575`). The release uses the existing hosting without DNS or access changes; its final SHA, workflow, deployment and live smoke evidence belongs in ignored `outputs/deployment-release-editorial.json`. This section describes the current work; earlier release records below are historical.
+
+The homepage now uses each of the three approved project assets once: Ikh Tamir in the hero, Sonsgolon as the sole large case study, and railway construction in the engineering section. The hero shade is concentrated behind copy, leaving the right-hand concrete structure clearer. Mobile retains the continuous 4:3 image and paper copy composition. Two text links preserve access to the other featured projects.
+
+The archive preserves all nine records and their order: one full-width image, two images below, then six numbered text records. Filters retain query/history/locale behavior. Image-free details start with the project title and facts instead of an empty hero. About, services, engineering and contact use distinct arrangements on the same paper/white/graphite palette. Mobile timeline years appear intact above their descriptions. Form/select borders were darkened after visual review found insufficient boundary contrast (the final border has approximately 3.50:1 against white and 3.20:1 against paper).
+
+Desktop primary links appear at 1280px when their measured labels fit, with a breakpoint that also responds to root text size. At 200% text they collapse into the existing menu. The new general SVG bridge explanation highlights superstructure, piers or foundations. All three explanations exist in static HTML without JavaScript; it is explicitly an explanatory diagram, with no claimed project geometry, dimensions or computed results. No WebGL, animation dependency or external asset was added.
+
+Package declarations, lockfile, original image bytes, media registry/pipeline, export adapter, team information and metadata helpers remain unchanged. The four before/after MN/EN desktop/mobile team-grid captures are byte-identical. SHA-256 checks confirm the six existing untracked user scripts are unchanged. No database migration is required.
+
+## Verification and visual evidence
+
+- ESLint, TypeScript, production build and responsive media checks passed. All nine approved originals and cached derivatives passed preservation, dimensions/no-upscale and EXIF checks.
+- Root (`https://gbet.mn`) and repository-prefix (`https://usuhuu0731.github.io/gbet.mn`) exports each passed 36 authored localized routes, 33 axe cases, eight desktop-navigation cases, 14 expanded-menu cases and 18 emulated 200% layout cases. The exporter additionally writes the root entry; authored route counts are derived from content, not a fixed assertion.
+- Coverage includes metadata/canonical/hreflang/OG, sitemap/robots/CNAME/Google verification, direct nested refresh and 404, assets/fonts, filter queries/history/language switching, mailto validation, gallery Escape/focus return, 320px reflow, 200% text, 44px tested controls, reduced motion and delayed/disabled JavaScript.
+- Added assertions verify one occurrence of each homepage project image, one Sonsgolon feature, the archive's full-width/two-column arrangement, no large image placeholders on unillustrated records/details, intact mobile years, and schematic controls/explanations in both locales. Export scanning found no configured private/unapproved markers or source PDFs. No new private records entered source or artifacts.
+- Production snapshots contain 52 matched screenshots per version in `outputs/editorial-baseline-review/` and `outputs/editorial-after-review/`. Hero, feature, archive, illustrated/unillustrated detail, engineering, about, contact, timeline and team were sampled in MN/EN at 390/1440px. Final border corrections were checked after the prototype review. The visual direction retains BANDI's project-led editorial hierarchy without reusing its content or design assets.
+
+The MN homepage is 8,376px tall at 390px (baseline 9,640; −13.1%) and 7,251px at 1440px (baseline 8,914; −18.7%). The MN archive is 4,764px / 4,391px (baseline 6,325 / 6,221; −24.7% / −29.4%). These are screenshot geometry comparisons, not performance metrics. Large imagery remains; the reduction comes primarily from removing repetition and empty image panels.
+
+Evidence: `outputs/editorial-site-check-root.json`, `outputs/editorial-site-check-prefix.json`, `outputs/editorial-zoom-root.json`, `outputs/editorial-zoom-prefix.json`, `outputs/editorial-media-check.json`, `outputs/editorial-preservation.json` and corresponding build/check logs. The immutable baseline export is `outputs/editorial-baseline-site/`. See [PERFORMANCE.md](PERFORMANCE.md) for fresh five-run before/after results and measured limitations. Reports and screenshots are ignored local artifacts, not public assets.
+
+The fresh 40-before/40-after home/detail batches pass the 5% LCP median regression gate in all eight conditions. Current mobile medians are 2588–2736ms, so the 2500ms absolute target remains unmet. All current CLS samples are 0; observed menu INP is 24–56ms. A separate 20-load schematic batch records INP 24–48ms and CLS 0; its mobile LCP medians of 2616/2620ms also exceed 2500ms. Missing menu INP samples remain unavailable. Full median/min/max and raw results are in PERFORMANCE; no field CWV guarantee is made.
+
+## Limits and publication boundary
+
+Chromium was tested on Windows. Firefox, Safari/WebKit, physical phones, native toolbar zoom, screen-reader behavior and field CWV were not verified. The 200% text and emulated viewport/DPR checks do not claim native toolbar testing or full WCAG 2.2 AA certification. The supplied project images remain limited to 1320–1846px source widths; no artificial upscaling was introduced. Multi-image gallery navigation still lacks an approved same-project multi-image dataset. Latin staff spellings, creator credits and director-message approval remain outstanding and were not invented.
+
+The desktop measured navigation needs hydration to appear; exported footer links, headings, images, project records and schematic explanations remain available without JavaScript. The contact form still opens a mailto draft and does not claim delivery. Publication is now authorized by the user's separate deployment request. Confirm CI, Pages deployment and live routes before reporting completion. To roll back a published release, revert its release commit and rebuild/test before deploying the revert. Preserve user scripts; do not reset or clean the shared checkout.
+
+---
+
+# Historical local editorial redesign review — 2026-10-03
 
 ## Review state
 

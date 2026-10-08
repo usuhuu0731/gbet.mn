@@ -2,14 +2,28 @@ import Link from "../lib/link";
 import { categories, ui, type Locale, type Project } from "../content/site";
 import { media } from "../content/media";
 import { MediaImage } from "./media-image";
+import type { CSSProperties } from "react";
+
+type ProjectPresentation = "feature" | "index-feature" | "index" | "detail";
+const imageSizes: Record<ProjectPresentation, string> = {
+  feature:
+    "(max-width: 392px) calc(100vw - 44px), (min-width: 1600px) 1336px, 88.8vw",
+  "index-feature":
+    "(max-width: 392px) calc(100vw - 44px), (min-width: 1600px) 1336px, 88.8vw",
+  index:
+    "(max-width: 392px) calc(100vw - 44px), (max-width: 767px) 88.8vw, (min-width: 1600px) 648px, calc(44.4vw - 20px)",
+  detail: "(max-width: 767px) 100vw, 89vw",
+};
 export function ProjectImage({
   project,
   locale,
   priority = false,
+  presentation = "detail",
 }: {
   project: Project;
   locale: Locale;
   priority?: boolean;
+  presentation?: ProjectPresentation;
 }) {
   const registered = media[project.slug];
   const image = registered
@@ -23,6 +37,14 @@ export function ProjectImage({
   return (
     <div
       className={`project-image ${image?.usageApproved ? "has-photo" : "awaiting-photo"} ${project.category}`}
+      data-presentation={presentation}
+      style={
+        registered
+          ? ({
+              "--project-aspect": `${registered.width} / ${registered.height}`,
+            } as CSSProperties)
+          : undefined
+      }
     >
       {image?.usageApproved ? (
         <>
@@ -30,7 +52,7 @@ export function ProjectImage({
             id={project.slug}
             locale={locale}
             priority={priority}
-            sizes="(max-width: 767px) 100vw, 90vw"
+            sizes={imageSizes[presentation]}
           />
           <span className="photo-kind">
             {image.kind === "rendering"
@@ -74,7 +96,11 @@ export function ProjectFeature({
         href={`/${locale}/projects/${project.slug}`}
         aria-label={project.name[locale]}
       >
-        <ProjectImage project={project} locale={locale} />
+        <ProjectImage
+          project={project}
+          locale={locale}
+          presentation="feature"
+        />
         <span className="feature-arrow" aria-hidden="true">
           ↗
         </span>
@@ -110,25 +136,43 @@ export function ProjectFeature({
 export function ProjectCard({
   project,
   locale,
+  index,
+  featuredImage = false,
 }: {
   project: Project;
   locale: Locale;
+  index: number;
+  featuredImage?: boolean;
 }) {
+  const hasImage = Boolean(media[project.slug]?.usageApproved);
   return (
     <article
-      className={`project-card ${media[project.slug]?.usageApproved ? "photographic-project" : "textual-project"}`}
+      className={`project-card ${hasImage ? "photographic-project" : "textual-project"}`}
     >
       <Link href={`/${locale}/projects/${project.slug}`}>
-        <ProjectImage project={project} locale={locale} />
+        {hasImage ? (
+          <ProjectImage
+            project={project}
+            locale={locale}
+            presentation={featuredImage ? "index-feature" : "index"}
+          />
+        ) : (
+          <span className="project-register-number" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        )}
         <div className="project-title">
           <h3>{project.name[locale]}</h3>
           <span aria-hidden="true">↗</span>
         </div>
         <div className="project-meta">
           <p>{project.location[locale]}</p>
-          <p>{project.length || project.year}</p>
+          <p>{[project.year, project.length].filter(Boolean).join(" / ")}</p>
         </div>
         {project.role && <p className="small">{project.role[locale]}</p>}
+        {!hasImage && (
+          <p className="project-register-note">{ui.photo[locale]}</p>
+        )}
       </Link>
     </article>
   );

@@ -2,10 +2,14 @@
 import { asset, basePath } from "../lib/paths";
 import Link from "../lib/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { nav, site, projects, type Locale } from "../content/site";
 import { readFilters, filterQuery } from "../lib/project-filters";
 import { useHydrated } from "../lib/use-hydrated";
+const primaryNav = ["projects", "expertise", "about"]
+  .map((path) => nav.find((item) => item.path === path))
+  .filter((item) => item !== undefined);
+
 function fitMenuBelowHeader(header: HTMLElement | null) {
   if (!header) return;
   header.style.setProperty(
@@ -36,6 +40,48 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     };
   }, [path]);
   const headerRef = useRef<HTMLElement>(null);
+  const primaryNavRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const primary = primaryNavRef.current;
+    const brand = header?.querySelector<HTMLElement>(".brand");
+    const actions = header?.querySelector<HTMLElement>(".header-actions");
+    if (!header || !primary || !brand || !actions) return;
+    let active = true;
+    const fitPrimaryNav = () => {
+      if (!active) return;
+      const leftEdge = brand.getBoundingClientRect().right;
+      const rightEdge = actions.getBoundingClientRect().left;
+      const width = primary.getBoundingClientRect().width;
+      // Scale the wide-navigation breakpoint with the user's text size too.
+      const minimumTextWidth =
+        80 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const fits =
+        window.matchMedia("(min-width: 1280px)").matches &&
+        window.innerWidth >= minimumTextWidth &&
+        width > 0 &&
+        width + 48 <= rightEdge - leftEdge;
+      primary.style.left = `${(leftEdge + rightEdge) / 2 - header.getBoundingClientRect().left}px`;
+      if (!fits && primary.contains(document.activeElement)) {
+        header.querySelector<HTMLButtonElement>(".menu-button")?.focus();
+      }
+      primary.dataset.fits = String(fits);
+    };
+    fitPrimaryNav();
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(fitPrimaryNav);
+    for (const element of [header, primary, brand, actions])
+      observer?.observe(element);
+    window.addEventListener("resize", fitPrimaryNav);
+    void document.fonts.ready.then(fitPrimaryNav);
+    return () => {
+      active = false;
+      observer?.disconnect();
+      window.removeEventListener("resize", fitPrimaryNav);
+    };
+  }, []);
   useEffect(() => {
     if (!open) return;
     const syncBounds = () => fitMenuBelowHeader(headerRef.current);
@@ -87,10 +133,11 @@ export function SiteHeader({ locale }: { locale: Locale }) {
         </span>
       </Link>
       <nav
+        ref={primaryNavRef}
         className="desktop-nav"
         aria-label={locale === "mn" ? "Үндсэн цэс" : "Main navigation"}
       >
-        {nav.slice(1, 5).map((n) => (
+        {primaryNav.map((n) => (
           <Link
             key={n.path}
             href={`/${locale}/${n.path}`}

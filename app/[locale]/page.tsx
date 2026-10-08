@@ -114,7 +114,7 @@ export default async function Home({
         </div>
         <div className="featured-projects">
           {projects
-            .filter((p) => p.featured)
+            .filter((p) => p.slug === "sonsgolon")
             .map((p, index) => (
               <ProjectFeature
                 key={p.slug}
@@ -124,6 +124,23 @@ export default async function Home({
               />
             ))}
         </div>
+        <nav
+          className="project-crosslinks"
+          aria-label={
+            l === "mn" ? "Бусад онцлох төсөл" : "More selected projects"
+          }
+        >
+          {projects
+            .filter((p) =>
+              ["ikh-tamir", "tavantolgoi-zuunbayan"].includes(p.slug),
+            )
+            .map((p) => (
+              <Link key={p.slug} href={`/${l}/projects/${p.slug}`}>
+                <span>{p.name[l]}</span>
+                <span aria-hidden="true">↗</span>
+              </Link>
+            ))}
+        </nav>
       </section>
       <section className="section expertise-section">
         <SectionHeading

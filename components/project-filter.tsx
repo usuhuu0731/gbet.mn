@@ -134,8 +134,14 @@ export function ProjectFilter({
         {filtered.length} {locale === "mn" ? "төсөл" : "projects"}
       </p>
       <div className="project-grid">
-        {filtered.map((p) => (
-          <ProjectCard key={p.slug} project={p} locale={locale} />
+        {filtered.map((p, i) => (
+          <ProjectCard
+            key={p.slug}
+            project={p}
+            locale={locale}
+            index={projects.indexOf(p)}
+            featuredImage={i === 0}
+          />
         ))}
       </div>
       {!filtered.length && (

@@ -38,6 +38,7 @@ export default async function Detail({
   const { locale: l, slug } = await params;
   const p = projects.find((p) => p.slug === slug);
   if (!p) notFound();
+  const hasImage = Boolean(media[p.slug]?.usageApproved);
   const nextProject =
     projects[
       (projects.findIndex((project) => project.slug === slug) + 1) %
@@ -51,7 +52,10 @@ export default async function Detail({
     [text("Үйлчилгээ", "Services"), categories[p.category][l]],
   ];
   return (
-    <main id="main">
+    <main
+      id="main"
+      className={hasImage ? "detail-with-image" : "detail-without-image"}
+    >
       <section className="page-heading detail-heading">
         <nav
           className="breadcrumbs"
@@ -69,20 +73,22 @@ export default async function Detail({
         </p>
         <h1>{p.name[l]}</h1>
       </section>
-      <section className="detail-hero">
-        {media[p.slug]?.usageApproved ? (
+      {hasImage && (
+        <section className="detail-hero">
           <ImageGallery ids={[p.slug]} locale={l}>
-            <ProjectImage project={p} locale={l} priority />
+            <ProjectImage
+              project={p}
+              locale={l}
+              priority
+              presentation="detail"
+            />
           </ImageGallery>
-        ) : (
-          <ProjectImage project={p} locale={l} priority />
-        )}
-        {media[p.slug]?.usageApproved && (
           <p className="detail-caption">{media[p.slug].caption[l]}</p>
-        )}
-      </section>
+        </section>
+      )}
       <section className="section project-detail">
         <aside>
+          {!hasImage && <p className="detail-photo-note">{ui.photo[l]}</p>}
           <p className="eyebrow">
             {l === "mn" ? "ТӨСЛИЙН МЭДЭЭЛЭЛ" : "PROJECT FACTS"}
           </p>

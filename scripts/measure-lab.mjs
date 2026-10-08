@@ -10,9 +10,13 @@ assert.ok(Number.isInteger(runs) && runs > 0);
 const tag = process.env.QA_REPORT_TAG || "after";
 assert.match(tag, /^[a-z0-9-]+$/);
 const interaction = process.env.QA_LAB_INTERACTION || "menu";
-assert.ok(["menu", "accordion"].includes(interaction));
+assert.ok(["menu", "accordion", "schematic"].includes(interaction));
 const measuredRoutes =
-  interaction === "accordion" ? ["expertise/"] : ["", "projects/ikh-tamir/"];
+  interaction === "accordion"
+    ? ["expertise/"]
+    : interaction === "schematic"
+      ? ["innovation/"]
+      : ["", "projects/ikh-tamir/"];
 const vitals = await readFile(
   new URL(
     "../node_modules/web-vitals/dist/web-vitals.iife.js",
@@ -76,6 +80,18 @@ try {
             const row = page.locator("#service-bridge-rehabilitation summary");
             await row.click();
             await row.click();
+          } else if (interaction === "schematic") {
+            for (const part of ["piers", "foundations", "deck"]) {
+              const control = page.locator(`[data-bridge-control="${part}"]`);
+              await control.click();
+              assert.equal(await control.getAttribute("aria-pressed"), "true");
+              assert.equal(
+                await page
+                  .locator(`[data-bridge-part="${part}"]`)
+                  .getAttribute("data-active"),
+                "true",
+              );
+            }
           } else {
             await page
               .getByRole("button", {
@@ -169,7 +185,9 @@ try {
         interaction:
           interaction === "accordion"
             ? "Open and close native bridge rehabilitation disclosure after fonts and network settle"
-            : "Open and close navigation menu after fonts and network settle",
+            : interaction === "schematic"
+              ? "Select piers, foundations and deck in the bridge schematic after fonts and network settle"
+              : "Open and close navigation menu after fonts and network settle",
         results,
         summaries,
       },

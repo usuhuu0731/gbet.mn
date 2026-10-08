@@ -1,0 +1,198 @@
+.bridge-schematic {
+  padding: var(--space) var(--gutter);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+}
+.bridge-schematic-heading {
+  max-width: 980px;
+  margin-bottom: clamp(32px, 4.5vw, 72px);
+}
+.bridge-schematic-heading .eyebrow {
+  margin-bottom: 24px;
+}
+.bridge-schematic-heading h2 {
+  max-width: 16ch;
+}
+.bridge-schematic-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(260px, 0.8fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+}
+.bridge-schematic-figure {
+  min-width: 0;
+}
+.bridge-schematic-drawing {
+  background:
+    linear-gradient(90deg, rgb(38 73 95 / 4%) 1px, transparent 1px),
+    linear-gradient(rgb(38 73 95 / 4%) 1px, transparent 1px), #fff;
+  background-size: 40px 40px;
+  border: 1px solid var(--line);
+}
+.bridge-schematic-drawing svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.bridge-schematic-figure figcaption {
+  margin-top: 16px;
+  max-width: 70ch;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+.bridge-schematic [data-bridge-part] {
+  --bridge-top: #e9ecea;
+  --bridge-front: #bdcbd0;
+  --bridge-end: #98acb6;
+  --bridge-edge: #648090;
+}
+.bridge-schematic [data-bridge-part][data-active="true"] {
+  --bridge-top: #dce6ff;
+  --bridge-front: #aec3ee;
+  --bridge-end: #7599e0;
+  --bridge-edge: var(--blue);
+}
+.bridge-schematic .bridge-block polygon {
+  stroke: var(--bridge-edge);
+  stroke-width: 0.7;
+  stroke-linejoin: round;
+  transition:
+    fill 180ms ease,
+    stroke 180ms ease;
+}
+.bridge-schematic .bridge-face-top {
+  fill: var(--bridge-top);
+}
+.bridge-schematic .bridge-face-front {
+  fill: var(--bridge-front);
+}
+.bridge-schematic .bridge-face-end {
+  fill: var(--bridge-end);
+}
+.bridge-schematic .bridge-girder {
+  --bridge-top: #8099a5;
+  --bridge-front: #546f7e;
+  --bridge-end: #3e596a;
+}
+.bridge-schematic [data-active="true"] .bridge-girder {
+  --bridge-top: #86a5e3;
+  --bridge-front: #4a74c8;
+  --bridge-end: #345db1;
+}
+.bridge-schematic .bridge-centerline {
+  fill: none;
+  stroke: var(--steel);
+  stroke-width: 1;
+  stroke-dasharray: 12 12;
+  opacity: 0.45;
+}
+.bridge-schematic .bridge-datum polygon {
+  fill: #e9eeeb;
+  stroke: #c1cdc9;
+  stroke-width: 0.7;
+}
+.bridge-schematic .bridge-datum line {
+  stroke: #aebebc;
+  stroke-width: 0.7;
+  stroke-dasharray: 3 5;
+}
+.bridge-schematic-part {
+  border-top: 1px solid var(--line);
+  padding: 12px 0 24px;
+}
+.bridge-schematic-part:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.bridge-schematic-part button {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 9px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font-size: clamp(1.05rem, 1.3vw, 1.4rem);
+  line-height: 1.35;
+  font-weight: 500;
+  transition: color 180ms ease;
+}
+.bridge-schematic-part button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.bridge-schematic-part button:not(:disabled):is(:hover, :focus-visible),
+.bridge-schematic-part button[aria-pressed="true"] {
+  color: var(--blue);
+}
+.bridge-schematic-part .bridge-part-number {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.bridge-schematic-part .bridge-part-marker {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--muted);
+  background: transparent;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+.bridge-schematic-part [aria-pressed="true"] .bridge-part-marker {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.bridge-schematic-part p {
+  margin: 4px 4px 0 40px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+@media (max-width: 1023px) {
+  .bridge-schematic-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .bridge-schematic-parts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .bridge-schematic-part:last-child {
+    border-bottom: 0;
+  }
+  .bridge-schematic-part p {
+    margin-left: 4px;
+  }
+}
+@media (max-width: 767px) {
+  .bridge-schematic-parts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .bridge-schematic-part p {
+    margin-left: 40px;
+  }
+  .bridge-schematic-part:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .bridge-schematic-drawing {
+    padding-block: 18px;
+    background-size: 28px 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bridge-schematic *,
+  .bridge-schematic *::before,
+  .bridge-schematic *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

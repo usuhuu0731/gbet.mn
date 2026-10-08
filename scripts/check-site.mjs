@@ -13,6 +13,12 @@ import {
 } from "./expected-routes.mjs";
 
 await mkdir("outputs", { recursive: true });
+const mediaSources = JSON.parse(
+  await readFile("content/media-sources.json", "utf8"),
+);
+const illustratedProjects = slugs.filter(
+  (slug) => mediaSources[slug]?.usageApproved,
+);
 const sitemap = await readFile("site/sitemap.xml", "utf8");
 const routes = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(
   (match) => match[1],
@@ -188,6 +194,17 @@ try {
         ).length,
         project.bridgeType ? 1 : 0,
       );
+      assert.equal(
+        await page.locator(".detail-hero").count(),
+        illustratedProjects.includes(project.slug) ? 1 : 0,
+        "Only projects with approved imagery have a large image hero",
+      );
+      if (!illustratedProjects.includes(project.slug)) {
+        assert.equal(await page.locator(".detail-without-image").count(), 1);
+        assert.equal(await page.locator(".detail-photo-note").count(), 1);
+        assert.equal(await page.locator(".awaiting-photo").count(), 0);
+        assert.ok(await page.locator(".project-detail aside").isVisible());
+      }
     }
   }
   const noJS = await browser.newContext({
@@ -209,11 +226,86 @@ try {
         .getAttribute("fetchpriority"),
       "high",
     );
+    assert.equal(
+      await staticPage.locator(".selected-work .project-feature").count(),
+      1,
+      "Homepage has one focused case study",
+    );
+    assert.ok(
+      (
+        await staticPage
+          .locator(".selected-work .feature-image-link")
+          .getAttribute("href")
+      ).endsWith("/projects/sonsgolon/"),
+    );
+    for (const slug of illustratedProjects) {
+      assert.equal(
+        await staticPage
+          .locator("main img")
+          .evaluateAll(
+            (images, alt) => images.filter((img) => img.alt === alt).length,
+            mediaSources[slug].alt[locale],
+          ),
+        1,
+        `The ${slug} project image appears once on the homepage`,
+      );
+    }
+    const mobileHero = await staticPage.locator(".hero-visual").boundingBox();
+    const mobileCopy = await staticPage
+      .locator(".hero-editorial")
+      .boundingBox();
+    assert.ok(Math.abs(mobileHero.width / mobileHero.height - 4 / 3) < 0.02);
+    assert.ok(mobileCopy.y >= mobileHero.y + mobileHero.height - 1);
     await staticPage.goto(`${base}/${locale}/projects/`);
     assert.equal(
       await staticPage.locator(".project-card").count(),
       slugs.length,
     );
+    assert.equal(
+      await staticPage.locator(".photographic-project").count(),
+      illustratedProjects.length,
+    );
+    assert.equal(
+      await staticPage.locator(".textual-project .project-image").count(),
+      0,
+      "Project register has no empty image cards",
+    );
+    assert.equal(
+      await staticPage.locator(".project-register-number").count(),
+      slugs.length - illustratedProjects.length,
+    );
+    assert.equal(
+      await staticPage.locator(".project-register-note").count(),
+      slugs.length - illustratedProjects.length,
+    );
+    await staticPage.goto(`${base}/${locale}/innovation/`);
+    const staticScheme = staticPage.locator(".bridge-schematic");
+    assert.equal(await staticScheme.count(), 1);
+    assert.equal(await staticScheme.locator("svg").count(), 1);
+    assert.equal(await staticScheme.locator("canvas").count(), 0);
+    assert.match(
+      await staticScheme.locator("figcaption").innerText(),
+      locale === "mn"
+        ? /ерөнхий схем.*тодорхой төслийн/s
+        : /general explanatory diagram.*specific GBET project/s,
+      "The illustration is explicitly distinguished from project geometry",
+    );
+    assert.equal(
+      await staticScheme.locator("[data-bridge-control]").count(),
+      3,
+    );
+    for (const control of await staticScheme
+      .locator("[data-bridge-control]")
+      .all()) {
+      const descriptionId = await control.getAttribute("aria-describedby");
+      assert.ok(descriptionId, "Each part has an associated explanation");
+      const description = staticScheme.locator(`[id="${descriptionId}"]`);
+      assert.ok(
+        await description.isVisible(),
+        "All explanations are readable without JS",
+      );
+      assert.ok((await description.innerText()).trim().length > 20);
+    }
     for (const route of ["", "expertise/"]) {
       await staticPage.goto(`${base}/${locale}/${route}`);
       const details = staticPage.locator(".expertise-grid details");
@@ -261,6 +353,10 @@ try {
   }
   await noJS.close();
   await page.goto(base + "/en/projects/");
+  const archiveOrder = await page
+    .locator(".project-card > a")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  assert.equal(new Set(archiveOrder).size, slugs.length);
   const cards = async (count) => {
     await page.waitForFunction(
       (n) => document.querySelectorAll(".project-card").length === n,
@@ -296,6 +392,13 @@ try {
   await cards(2);
   await page.goForward();
   await cards(slugs.length);
+  assert.deepEqual(
+    await page
+      .locator(".project-card > a")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+    archiveOrder.map((href) => href.replace("/en/", "/mn/")),
+    "Reset and history restore the same authored project order",
+  );
   await page.goto(base + "/en/projects/?status=invalid&year=not-a-year");
   await cards(slugs.length);
   assert.equal(
@@ -360,7 +463,8 @@ try {
     ),
   );
   await page.goto(base + "/en/projects/ongi-river/");
-  assert.equal(await page.locator(".detail-hero .awaiting-photo").count(), 1);
+  assert.equal(await page.locator(".detail-hero").count(), 0);
+  assert.equal(await page.locator(".detail-photo-note").count(), 1);
   assert.equal(
     await page
       .getByRole("button", { name: "Expand image", exact: true })
@@ -507,6 +611,7 @@ try {
         "projects",
         "projects/sonsgolon",
         "projects/ikh-tamir",
+        "projects/ongi-river",
         "expertise",
         "innovation",
         "contact",
@@ -527,6 +632,8 @@ try {
             "expertise",
             "innovation",
             "projects/ikh-tamir",
+            "projects",
+            "projects/ongi-river",
           ].includes(route)
         ) {
           const result = await new AxeBuilder({ page })
@@ -549,6 +656,107 @@ try {
             const box = await target.boundingBox();
             assert.ok(box.width >= 44 && box.height >= 44);
           }
+        }
+        if (["", "about"].includes(route) && width <= 390) {
+          const timeline = await page
+            .locator(".timeline article")
+            .evaluateAll((articles) =>
+              articles.map((article) => {
+                const year = article.querySelector("span");
+                const title = article.querySelector("h3");
+                const range = document.createRange();
+                range.selectNodeContents(year);
+                const text = range.getBoundingClientRect();
+                const box = year.getBoundingClientRect();
+                return {
+                  year: year.textContent,
+                  singleLine: range.getClientRects().length === 1,
+                  fits: text.width <= box.width + 1,
+                  aboveTitle:
+                    box.bottom <= title.getBoundingClientRect().top + 1,
+                };
+              }),
+            );
+          assert.ok(timeline.length > 0);
+          assert.ok(
+            timeline.every(
+              (item) => item.singleLine && item.fits && item.aboveTitle,
+            ),
+            `Mobile timeline years are intact above their titles: ${JSON.stringify(timeline)}`,
+          );
+        }
+        if (route === "projects") {
+          const images = page.locator(".photographic-project");
+          const [first, second, third] = await Promise.all(
+            [0, 1, 2].map((index) => images.nth(index).boundingBox()),
+          );
+          if (width >= 768) {
+            assert.ok(
+              first.width > second.width * 1.8,
+              "First image leads the archive",
+            );
+            assert.ok(
+              Math.abs(second.y - third.y) <= 1,
+              "Next two images share a row",
+            );
+            assert.ok(second.x + second.width <= third.x + 1);
+          } else {
+            assert.ok(second.y >= first.y + first.height - 1);
+            assert.ok(third.y >= second.y + second.height - 1);
+          }
+          assert.equal(
+            await page.locator(".textual-project .project-image").count(),
+            0,
+          );
+        }
+        if (route === "innovation") {
+          const scheme = page.locator(".bridge-schematic");
+          await page.waitForFunction(() =>
+            [...document.querySelectorAll("[data-bridge-control]")].every(
+              (button) => !button.disabled,
+            ),
+          );
+          for (const part of ["piers", "foundations", "deck"]) {
+            const control = scheme.locator(`[data-bridge-control="${part}"]`);
+            await control.press(part === "foundations" ? "Space" : "Enter");
+            await page.waitForFunction(
+              (selected) =>
+                document
+                  .querySelector(`[data-bridge-control="${selected}"]`)
+                  .getAttribute("aria-pressed") === "true",
+              part,
+            );
+            assert.equal(await control.getAttribute("aria-pressed"), "true");
+            assert.equal(
+              await scheme
+                .locator('[data-bridge-control][aria-pressed="true"]')
+                .count(),
+              1,
+            );
+            assert.equal(
+              await scheme
+                .locator(`[data-bridge-part="${part}"]`)
+                .getAttribute("data-active"),
+              "true",
+            );
+            const box = await control.boundingBox();
+            assert.ok(
+              box.width >= 44 && box.height >= 44,
+              "44px schematic control",
+            );
+          }
+          assert.ok(
+            await scheme
+              .locator(".bridge-block polygon, [data-bridge-control]")
+              .evaluateAll((parts) =>
+                parts.every((part) =>
+                  getComputedStyle(part)
+                    .transitionDuration.split(",")
+                    .every((duration) => parseFloat(duration) <= 0.001),
+                ),
+              ),
+            "Reduced motion disables schematic transitions",
+          );
         }
       }
   }
@@ -594,26 +802,85 @@ try {
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const route of [
-    "",
-    "team",
-    "contact",
-    "expertise",
-    "innovation",
-    "projects/ikh-tamir",
-  ]) {
-    await page.goto(`${base}/mn/${route ? route + "/" : ""}`);
-    await page.evaluate(
-      () => (document.documentElement.style.fontSize = "200%"),
-    );
-    assert.equal(
+  for (const locale of ["mn", "en"])
+    for (const route of [
+      "",
+      "team",
+      "contact",
+      "expertise",
+      "innovation",
+      "projects",
+      "projects/ikh-tamir",
+      "projects/ongi-river",
+    ]) {
+      await page.goto(`${base}/${locale}/${route ? route + "/" : ""}`);
       await page.evaluate(
-        () => document.documentElement.scrollWidth > innerWidth,
-      ),
-      false,
-      `200% ${route}`,
-    );
-  }
+        () => (document.documentElement.style.fontSize = "200%"),
+      );
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        ),
+        false,
+        `200% ${locale}/${route}`,
+      );
+    }
+  const desktopNavigationChecks = [];
+  for (const locale of ["mn", "en"])
+    for (const test of [
+      { width: 1279, textZoom: false, visible: false },
+      { width: 1280, textZoom: false, visible: true },
+      { width: 1440, textZoom: false, visible: true },
+      { width: 1440, textZoom: true, visible: false },
+    ]) {
+      await page.setViewportSize({ width: test.width, height: 900 });
+      await page.goto(`${base}/${locale}/expertise/`);
+      await page.evaluate(() => document.fonts.ready);
+      if (test.textZoom)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "200%"),
+        );
+      await page.waitForFunction((visible) => {
+        const navigation = document.querySelector(".desktop-nav");
+        const style = getComputedStyle(navigation);
+        return (
+          (style.display !== "none" && style.visibility !== "hidden") ===
+          visible
+        );
+      }, test.visible);
+      const navigation = page.locator(".desktop-nav");
+      assert.deepEqual(
+        await navigation
+          .locator("a")
+          .evaluateAll((links) =>
+            links.map((link) => link.getAttribute("href")),
+          ),
+        ["projects", "expertise", "about"].map(
+          (path) => `${basePath}/${locale}/${path}/`,
+        ),
+      );
+      if (test.visible) {
+        const [brand, navBox, actions] = await Promise.all(
+          [".brand", ".desktop-nav", ".header-actions"].map((selector) =>
+            page.locator(selector).boundingBox(),
+          ),
+        );
+        assert.ok(brand.x + brand.width <= navBox.x + 1);
+        assert.ok(navBox.x + navBox.width <= actions.x + 1);
+        assert.equal(
+          await navigation
+            .locator('[aria-current="page"]')
+            .getAttribute("href"),
+          `${basePath}/${locale}/expertise/`,
+        );
+        await navigation.locator("a").first().focus();
+        assert.equal(
+          await page.locator(":focus").getAttribute("href"),
+          `${basePath}/${locale}/projects/`,
+        );
+      }
+      desktopNavigationChecks.push({ locale, ...test });
+    }
   const menuChecks = [];
   for (const locale of ["mn", "en"])
     for (const test of [
@@ -622,6 +889,8 @@ try {
       { width: 768, height: 900, textZoom: false },
       { width: 1023, height: 900, textZoom: false },
       { width: 1024, height: 900, textZoom: false },
+      { width: 1280, height: 900, textZoom: false },
+      { width: 1440, height: 900, textZoom: true },
     ]) {
       await page.setViewportSize({ width: test.width, height: test.height });
       await page.goto(`${base}/${locale}/expertise/`);
@@ -673,6 +942,7 @@ try {
         failed,
         forms: "validated; mailto draft only",
         menuChecks,
+        desktopNavigationChecks,
       },
       null,
       2,

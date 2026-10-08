@@ -13,6 +13,7 @@ import {
 import { pageMetadata } from "../../../lib/metadata";
 import { ProjectFilter } from "../../../components/project-filter";
 import { ContactForm } from "../../../components/contact-form";
+import { BridgeSchematic } from "../../../components/bridge-schematic";
 import {
   SectionHeading,
   ExpertiseGrid,
@@ -80,11 +81,11 @@ export default async function ContentPage({
   return (
     <main id="main" className={`content-page page-${page}`}>
       <section
-        className={`page-heading heading-${page}${page === "innovation" ? " engineering-grid" : ""}`}
+        className={`page-heading heading-${page}${page === "innovation" ? " engineering-grid engineering-grid-dark" : ""}`}
       >
         <p className="eyebrow">GBET / {n.name[l]}</p>
         <h1>{titles[page][l]}</h1>
-        {["about", "expertise"].includes(page) && <p>{site.description[l]}</p>}
+        {page === "expertise" && <p>{site.description[l]}</p>}
       </section>
       {page === "projects" && (
         <section className="section page-content">
@@ -103,7 +104,7 @@ export default async function ContentPage({
       )}
       {page === "about" && (
         <>
-          <section className="section intro">
+          <section className="section intro about-introduction">
             <p className="eyebrow">
               01 / {l === "mn" ? "БИДНИЙ ТУХАЙ" : "WHO WE ARE"}
             </p>
@@ -124,7 +125,7 @@ export default async function ContentPage({
               </Link>
             </div>
           </section>
-          <section className="section">
+          <section className="section about-principles">
             <SectionHeading
               number="02"
               label={
@@ -159,7 +160,7 @@ export default async function ContentPage({
               </article>
             </div>
           </section>
-          <section className="section">
+          <section className="section about-record">
             <SectionHeading
               number="03"
               label={l === "mn" ? "ОН ЦАГ" : "MILESTONES"}
@@ -190,7 +191,8 @@ export default async function ContentPage({
       )}
       {page === "innovation" && (
         <>
-          <section className="section page-content">
+          <BridgeSchematic locale={l} />
+          <section className="section page-content engineering-study">
             <SectionHeading
               number="01"
               label={

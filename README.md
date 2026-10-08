@@ -99,3 +99,24 @@ Detail highlights read the existing length/type fields verbatim and omit missing
 The numbered menu uses three/two/one columns at 1024/768px breakpoints. It remains a non-modal navigation panel with Escape, focus return and focus-exit closure. While open, its available height follows the actual header bounds through ResizeObserver and window resize/scroll events; listeners are removed when it closes. This matters when 200% text enlargement increases header height. Reduced-motion preferences disable visual transitions.
 
 Capture the current UI with `QA_REPORT_TAG=ui-after node scripts/capture-ui.mjs` (PowerShell: set `$env:QA_REPORT_TAG='ui-after'` first). It captures home, services, facts/detail, engineering, menu, form and the unchanged team in both locales at 390/1440 widths. `QA_LAB_INTERACTION=accordion` selects five-run service-disclosure measurements using `scripts/measure-lab.mjs`; the default menu measurement and its original two routes remain unchanged. Measurements should run without parallel builds or browser QA. See PERFORMANCE and the UI section of REDESIGN_REVIEW for actual results and limitations.
+
+## Editorial engineering — 2026-10-08 local review
+
+This revision was completed for local review on `design/editorial-engineering`, based on release `761a1bd92071aa40892024bd25480a6a570cb65b`. The user separately authorized production deployment on 2026-10-08. Dependencies, lockfile, media pipeline, export adapter and GitHub Pages hosting remain unchanged; no database migration is required. The release uses the existing main-triggered Pages workflow. Confirm CI, deployment and live smoke before declaring publication complete; retain the release evidence in ignored `outputs/deployment-release-editorial.json`. The historical release records above remain applicable to their respective versions.
+
+The homepage uses each approved project image once: Ikh Tamir in the hero, Sonsgolon as the selected case study, and the railway photograph in engineering. Other selected projects use text links. The project index preserves authored order and URL filters, with one large image followed by two image features and compact text rows for records without approved photographs. Those detail pages start with facts and approved copy instead of a large empty image panel.
+
+`ProjectImage.presentation` accepts `feature`, `index-feature`, `index` or `detail` (default). It selects responsive image sizes for the actual placement; image availability still comes from the existing media registry. The primary desktop links are Projects, Expertise and About. After hydration they appear only at a viewport of at least 1280px, at least 80 times the computed root font size, and sufficient measured clearance between brand and actions. ResizeObserver and font readiness recalculate the fit; the existing menu handles narrower or enlarged-text layouts. Footer navigation remains available without JavaScript.
+
+The engineering page adds a generic SVG bridge diagram with superstructure, pier and foundation controls. It illustrates structural relationships rather than a GBET project's geometry or calculation results. All descriptions are exported as readable HTML; controls activate after hydration. Reduced motion disables its transitions. The SVG uses original code and adds no rendering or animation dependency. Team content and portrait layouts are preserved.
+
+Use distinct report tags to retain previous review evidence. The editorial capture script produces 52 screenshots across MN/EN and 390/1440px layouts, with a capture manifest. Run measurements without concurrent builds or browser QA:
+
+```sh
+QA_REPORT_TAG=editorial-after node scripts/capture-editorial.mjs
+QA_REPORT_TAG=editorial-after QA_LAB_RUNS=5 npm run measure:lab
+QA_REPORT_TAG=editorial-schematic QA_LAB_RUNS=5 QA_LAB_INTERACTION=schematic npm run measure:lab
+node scripts/compare-ui-performance.mjs outputs/performance-editorial-before.json outputs/performance-editorial-after.json outputs/editorial-performance-comparison.json
+```
+
+PowerShell sets the same variables with `$env:QA_REPORT_TAG='editorial-after'`, `$env:QA_LAB_RUNS='5'` and, for the schematic run, `$env:QA_LAB_INTERACTION='schematic'`. Clear `QA_LAB_INTERACTION` before a default menu comparison. Schematic measurements visit engineering and select piers, foundations and deck; menu and accordion modes retain their earlier behavior. The optional third comparison argument changes only the report destination, so the October 6 comparison need not be overwritten. Current check outcomes and measurement limitations belong in REDESIGN_REVIEW and PERFORMANCE; these usage instructions do not assert a completed test run.

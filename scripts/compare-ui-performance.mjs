@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 
 const beforePath = process.argv[2] || "outputs/performance-ui-before.json";
 const afterPath = process.argv[3] || "outputs/performance-ui-after.json";
+const outputPath = process.argv[4] || "outputs/ui-performance-comparison.json";
 const before = JSON.parse(await readFile(beforePath, "utf8"));
 const after = JSON.parse(await readFile(afterPath, "utf8"));
 for (const key of [
@@ -45,10 +46,7 @@ const report = {
   comparisons,
   note: "Five-run local lab comparison; unavailable INP is null, not zero. Not field CWV or statistical significance.",
 };
-await writeFile(
-  "outputs/ui-performance-comparison.json",
-  JSON.stringify(report, null, 2),
-);
+await writeFile(outputPath, JSON.stringify(report, null, 2));
 assert.ok(
   comparisons.every((row) => row.lcpRegressionGate),
   "LCP regression exceeds 5%; see report",
