@@ -1,0 +1,33 @@
+.brand .brand-anniversary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  margin-top: 5px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.brand-anniversary strong {
+  font-size: 1.1em;
+  font-weight: 700;
+}
+.brand-anniversary span {
+  margin-left: 0.25em;
+  font-size: 0.85em;
+  font-weight: 400;
+}
+@media (max-width: 767px) {
+  .brand .brand-anniversary {
+    font-size: 0.6rem;
+  }
+}
+@media (max-width: 360px) {
+  .brand .brand-anniversary {
+    display: flex;
+    font-size: 0.6rem;
+  }
+  .brand-anniversary span {
+    display: none;
+  }
+}

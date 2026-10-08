@@ -29,8 +29,8 @@ export const site = {
   contactSource:
     "https://user.tender.gov.mn/uploads/question/68145e70858e5.pdf",
   description: text(
-    "ГБЭТ ХХК (GBET LLC) — гүүр, туннель, хотын авто зам, замын байгууламжийн зураг төсөл, техник-эдийн засгийн үндэслэлийн Монголын зөвлөх инженерийн компани.",
-    "GBET LLC (ГБЭТ ХХК) is a Mongolian consulting engineering company focused on bridge and tunnel design, urban road structures and infrastructure feasibility studies.",
+    "ГБЭТ ХХК (GBET LLC) — зам, гүүрийн зураг төсөл, техник-эдийн засгийн үндэслэл, норм боловсруулах чиглэлээр ажилладаг Монголын зөвлөх инженерийн компани.",
+    "GBET LLC (ГБЭТ ХХК) is a Mongolian consulting engineering company providing road and bridge design, feasibility studies and development of engineering norms.",
   ),
 };
 export const nav = [
@@ -84,6 +84,38 @@ export const services: Service[] = [
     projectSlugs: ["ongi-river", "orkhon-ongotstoi"],
   },
   {
+    id: "road-design",
+    title: text("Замын зураг төсөл", "Road design"),
+    copy: text(
+      "Авто замын инженерийн зураг төсөл боловсруулах.",
+      "Preparation of engineering designs for roads.",
+    ),
+  },
+  {
+    id: "feasibility-studies",
+    title: text("Техник-эдийн засгийн үндэслэл", "Feasibility studies"),
+    copy: text(
+      "Дэд бүтцийн техник-эдийн засгийн үндэслэл боловсруулах.",
+      "Preparation of infrastructure feasibility studies.",
+    ),
+  },
+  {
+    id: "engineering-norms",
+    title: text("Норм боловсруулах", "Engineering norms"),
+    copy: text(
+      "Зам, гүүрийн салбарын норм боловсруулах.",
+      "Development of road and bridge engineering norms.",
+    ),
+  },
+  {
+    id: "technical-supervision",
+    title: text("Хяналтын зөвлөх үйлчилгээ", "Supervision consultancy"),
+    copy: text(
+      "Авто зам, замын байгууламжийг барих, засварлахад техник, технологийн хяналт тавих зөвлөх үйлчилгээ.",
+      "Consultancy for technical and technological supervision of road and road-structure construction and repair.",
+    ),
+  },
+  {
     id: "bridge-rehabilitation",
     title: text("Гүүрийн шинэчлэлт", "Bridge rehabilitation"),
     copy: text(
@@ -107,14 +139,6 @@ export const services: Service[] = [
     copy: text(
       "Гүүр, туннелийн зураг төслийн тусгай зөвшөөрлийн хүрээ.",
       "Within the registered bridge and tunnel design licence scope.",
-    ),
-  },
-  {
-    id: "feasibility-studies",
-    title: text("Техник-эдийн засгийн үндэслэл", "Feasibility studies"),
-    copy: text(
-      "Дэд бүтцийн техник-эдийн засгийн үндэслэл боловсруулах.",
-      "Preparation of infrastructure feasibility studies.",
     ),
   },
   {
@@ -431,14 +455,3 @@ projects.unshift(
     },
   },
 );
-export const credential = {
-  registry: "2089491",
-  number: "2022/01/006",
-  start: "2022-04-01",
-  end: "2027-04-01",
-  source: "https://mrt.gov.mn/i/3663",
-  caveat: text(
-    "Яамны нийтэлсэн бүртгэл дэх хугацаа. Одоогийн эрхийн төлөвийг тусад нь нягтална.",
-    "Validity period recorded in the Ministry’s published register. Current licence standing requires separate confirmation.",
-  ),
-};

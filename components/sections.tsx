@@ -1,11 +1,13 @@
 import Link from "../lib/link";
+import { companyHistory } from "../content/company-history";
+import { licences, licenceRegistry } from "../content/licences";
 import {
-  credential,
   services,
   site,
   text,
   projects,
   type Locale,
+  type Localized,
 } from "../content/site";
 export function SectionHeading({
   number,
@@ -60,42 +62,76 @@ export function ExpertiseGrid({ locale }: { locale: Locale }) {
 }
 export function CredentialPanel({ locale }: { locale: Locale }) {
   return (
-    <div className="credential-panel">
-      <div>
-        <p className="eyebrow">
-          {locale === "mn" ? "ТУСГАЙ ЗӨВШӨӨРЛИЙН БҮРТГЭЛ" : "LICENCE RECORD"}
-        </p>
-        <h3>
-          {locale === "mn"
-            ? "Гүүр, туннель. Хотын зам. ТЭЗҮ."
-            : "Bridges & tunnels. Urban roads. Feasibility."}
-        </h3>
-      </div>
-      <dl>
-        <div>
-          <dt>{locale === "mn" ? "Гэрчилгээ" : "Licence"}</dt>
-          <dd>{credential.number}</dd>
-        </div>
-        <div>
-          <dt>{locale === "mn" ? "Бүртгэсэн хугацаа" : "Recorded validity"}</dt>
-          <dd>2022.04.01 — 2027.04.01</dd>
-        </div>
-        <div>
-          <dt>{locale === "mn" ? "Регистр" : "Registry"}</dt>
-          <dd>{credential.registry}</dd>
-        </div>
-      </dl>
-      <p className="small">
-        {credential.caveat[locale]}{" "}
-        <a href={credential.source} target="_blank" rel="noreferrer">
-          {locale === "mn" ? "Яамны бүртгэл" : "Ministry register"}
-        </a>
-      </p>
+    <div className="licence-records">
+      {licences.map((licence) => (
+        <article
+          className="credential-panel"
+          data-licence={licence.id}
+          key={licence.id}
+        >
+          <div>
+            <p className="eyebrow">
+              {locale === "mn" ? "ТУСГАЙ ЗӨВШӨӨРӨЛ" : "LICENCE RECORD"}
+            </p>
+            <h3>{licence.title[locale]}</h3>
+            <ul className="licence-scopes">
+              {licence.scopes.map((scope, index) => (
+                <li key={scope.code || index}>
+                  {scope.code && (
+                    <span className="licence-scope-code">{scope.code}</span>
+                  )}
+                  <span>{scope.description[locale]}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <dl>
+            <div>
+              <dt>{locale === "mn" ? "Гэрчилгээ" : "Certificate"}</dt>
+              <dd>{licence.number}</dd>
+            </div>
+            <div>
+              <dt>{locale === "mn" ? "Олгосон огноо" : "Issue date"}</dt>
+              <dd>
+                <time dateTime={licence.issuedOn}>
+                  {licence.issuedOn.replaceAll("-", ".")}
+                </time>
+              </dd>
+            </div>
+            <div>
+              <dt>{locale === "mn" ? "Олгосон хугацаа" : "Granted term"}</dt>
+              <dd>
+                {licence.termYears} {locale === "mn" ? "жил" : "years"}
+              </dd>
+            </div>
+            <div>
+              <dt>{locale === "mn" ? "Регистр" : "Company registry"}</dt>
+              <dd>{licenceRegistry}</dd>
+            </div>
+          </dl>
+          <p className="small">
+            {locale === "mn"
+              ? "Компанийн ирүүлсэн гэрчилгээний мэдээлэл."
+              : "Details from the certificate supplied by the company."}
+            {licence.publicSource && (
+              <>
+                {" "}
+                <a href={licence.publicSource} target="_blank" rel="noreferrer">
+                  {locale === "mn"
+                    ? "Яамны нийтэлсэн бүртгэл"
+                    : "Published ministry register"}
+                </a>
+              </>
+            )}
+          </p>
+        </article>
+      ))}
     </div>
   );
 }
 export function Timeline({ locale }: { locale: Locale }) {
-  const items = [
+  const items: { year: string; title: Localized; source?: string }[] = [
+    ...companyHistory.milestones,
     {
       year: "2013",
       title: text(
@@ -127,9 +163,20 @@ export function Timeline({ locale }: { locale: Locale }) {
         <article key={i.year}>
           <span>{i.year}</span>
           <h3>{i.title[locale]}</h3>
-          <a className="small" href={i.source} target="_blank" rel="noreferrer">
-            {locale === "mn" ? "Эх сурвалж" : "Source record"}
-          </a>
+          {i.source ? (
+            <a
+              className="small"
+              href={i.source}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {locale === "mn" ? "Эх сурвалж" : "Source record"}
+            </a>
+          ) : (
+            <p className="small">
+              {locale === "mn" ? "Компанийн түүх" : "Company history"}
+            </p>
+          )}
         </article>
       ))}
     </div>

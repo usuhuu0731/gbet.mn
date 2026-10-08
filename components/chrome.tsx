@@ -6,6 +6,8 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { nav, site, projects, type Locale } from "../content/site";
 import { readFilters, filterQuery } from "../lib/project-filters";
 import { useHydrated } from "../lib/use-hydrated";
+import { CompanyAnniversary } from "./company-anniversary";
+import { companyExperience } from "../content/company-history";
 const primaryNav = ["projects", "expertise", "about"]
   .map((path) => nav.find((item) => item.path === path))
   .filter((item) => item !== undefined);
@@ -18,6 +20,11 @@ function fitMenuBelowHeader(header: HTMLElement | null) {
   );
 }
 export function SiteHeader({ locale }: { locale: Locale }) {
+  const { sinceYear, referenceYear } = companyExperience;
+  const hasAnniversary = sinceYear !== null && referenceYear > sinceYear;
+  const brandLabel = hasAnniversary
+    ? `${site.name[locale]}, ${referenceYear - sinceYear} ${locale === "mn" ? "жилийн замнал" : "years of history"}, ${sinceYear}–${referenceYear}`
+    : site.name[locale];
   const hydrated = useHydrated();
   const path = usePathname()
     .replace(new RegExp(`^${basePath}(?=/|$)`), "")
@@ -125,11 +132,16 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       <Link
         href={`/${locale}`}
         className="brand"
-        aria-label={site.name[locale]}
+        aria-label={brandLabel}
       >
         <img src={asset("/logo-mark.png")} alt="" width="44" height="44" />
         <span>
-          GBET<small>CONSULTING ENGINEERS</small>
+          GBET
+          {hasAnniversary ? (
+            <CompanyAnniversary locale={locale} />
+          ) : (
+            <small>CONSULTING ENGINEERS</small>
+          )}
         </span>
       </Link>
       <nav

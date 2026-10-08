@@ -1,0 +1,123 @@
+.project-slideshow .project-slide-picture {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.project-slideshow .project-slide-picture[data-active="true"] {
+  opacity: 1;
+}
+.project-slideshow .hero-shade {
+  pointer-events: none;
+}
+.project-slideshow .hero-image-caption {
+  bottom: 90px;
+  min-height: 44px;
+  max-width: min(480px, 46vw);
+  line-height: 1.5;
+}
+.project-slideshow .slide-rendering-label {
+  display: inline-block;
+  border-bottom: 1px solid #ffffff80;
+  padding-bottom: 2px;
+}
+.slideshow-controls {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: white;
+}
+.slideshow-controls button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  transition: background 180ms ease;
+}
+.slideshow-controls button:where(:hover, :focus-visible) {
+  background: #14232d99;
+}
+.project-slideshow :where(a, button):focus-visible {
+  outline-color: white;
+  outline-offset: 2px;
+}
+.slideshow-dots {
+  display: flex;
+}
+.slideshow-dots button span {
+  width: 9px;
+  height: 9px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  transition: background 180ms ease;
+}
+.slideshow-dots button[aria-pressed="true"] span {
+  background: white;
+  box-shadow: 0 0 0 3px #ffffff26;
+}
+.slideshow-controls .slideshow-play {
+  border-left: 1px solid #ffffff66;
+  margin-left: 4px;
+}
+.slideshow-error {
+  position: absolute;
+  bottom: 24px;
+  right: calc(var(--gutter) + 300px);
+  max-width: 270px;
+  padding: 8px 12px;
+  color: white;
+  background: var(--ink);
+  font-size: 0.75rem;
+}
+@media (min-width: 768px) {
+  .image-hero-slideshow {
+    /* Reserve a separate caption/control rail, including enlarged text. */
+    padding-bottom: calc(118px + 5.2rem);
+  }
+}
+@media (max-width: 767px) {
+  .project-slideshow .hero-shade {
+    background: linear-gradient(
+      0deg,
+      #061722e8 0%,
+      #061722a8 65%,
+      transparent 100%
+    );
+  }
+  .project-slideshow .hero-image-caption {
+    bottom: 62px;
+    max-width: none;
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  .project-slideshow .hero-image-caption span {
+    margin-top: 3px;
+    font-size: 0.68rem;
+  }
+  .slideshow-controls {
+    bottom: 8px;
+    gap: 0;
+  }
+  .slideshow-error {
+    right: var(--gutter);
+    left: var(--gutter);
+    bottom: 64px;
+    max-width: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-slideshow .project-slide-picture,
+  .slideshow-controls button,
+  .slideshow-dots button span {
+    transition: none;
+  }
+}

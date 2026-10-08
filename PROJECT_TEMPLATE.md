@@ -24,9 +24,25 @@ OG previews use approved imagery and the supplied `ogTitle.mn/en` (explicit line
 
 Add only approved current staff to `content/team.ts`, with stable id, MN/EN professional name and role. Preserve supplied spelling until a Latin version is confirmed. Biographies are optional and must be reviewed.
 
+Home/about selectors read the same team array. Keep each name and role visible with its thumbnail; do not make identity depend on hover. The first member is the default large profile. Check keyboard selection and no-JavaScript links to `/team/#id` after reordering. The separate full directory stays available.
+
 Portraits: get separate website-publication permission, place the image in `public/team/`, register it in `content/media-sources.json` with kind `portrait`, and set `portraitId` on the member. Use the supplied portrait with a reviewed 4:5 crop and accurate alt text; do not synthesize identities or alter the image to force a neutral background. Update dimensions from the actual file. Missing/unapproved portraits use the graphite placeholder automatically. Source identity/diploma scans never belong in public/team.
 
 Keep images awaiting permission outside this repository and public/. A false display flag does not protect a publicly served file.
+
+## Header anniversary and rotating project images
+
+The company confirmed operating history from “Ундрага” LLC in 1996 and the GBET LLC name from 2006. Maintain both stages in `content/company-history.ts`; the badge counts operating history from 1996. Do not treat this as a GBET incorporation date or add an assumed `foundingDate` to structured data. Review the explicit reference year before publication; the static badge does not update itself at New Year. Keep private evidence outside this repository.
+
+The homepage slideshow list uses existing project slugs and the media registry. Only approved image variants may be selected. Preserve photograph/rendering labels, actual project captions and locale links. Only the first image should be present in initial HTML; subsequent images load on request. Every added slide must work with manual controls, pause, reduced motion, slow/failed image loads and keyboard focus. Keep the existing 4:3 mobile composition and test long captions at 200% text size.
+
+## Licence records
+
+Maintain the sanitized text in `content/licences.ts`. Transcribe certificate numbers, issue dates, printed terms and activity wording from supplied evidence. Keep activity codes distinct from statutory article references. A printed term is not a live standing check; do not label a certificate as currently active or generate a legal expiry date from arithmetic. A public-source link is optional and must support that record. Never fabricate a source URL for a privately supplied certificate. Original scans, signatures, seals and legal-reference source images stay outside the repository and `public/`.
+
+## Partner organizations
+
+Maintain the public name/link list in `content/partners.ts`; `PartnersSection` renders it on both the home and about pages in MN/EN without client JavaScript. Confirm the intended organization when names are ambiguous. Preserve the supplied legal form in MN and use the verified English name or a plain translation without guessing a legal suffix. Links point to the organization's website, not evidence of a partnership. The client confirmed the six initial entries on 2026-10-08, including the Urban Planning and Research Institute. Add separately approved local logos only if provided; the current design uses typography and no external image requests. Keep source documents and private relationship verification outside public content and repository history.
 
 ## Director's message
 
@@ -42,7 +58,7 @@ Keep the domain origin, Pages settings and CNAME consistent. Preserve the Google
 
 The `design/editorial-engineering` revision starts from `761a1bd92071aa40892024bd25480a6a570cb65b` and was first delivered for local review. The user separately requested deployment on 2026-10-08; its CI, deployment and live verification evidence belongs in ignored `outputs/deployment-release-editorial.json`. Dependencies, lockfile, media generation, export adapter and hosting are unchanged.
 
-Keep the three homepage images distinct: Ikh Tamir hero, Sonsgolon feature, railway engineering section. Use text links for additional selected projects. The project index derives photographic or text-only presentation from approved media in the registry and preserves authored order, total count and filter behavior. Do not add a second image-availability flag or restore large blank image cards. `ProjectImage.presentation` chooses `feature`, `index-feature`, `index` or `detail`; review its responsive `sizes` against the actual gutter and column width when changing a placement.
+The initial homepage imagery is Ikh Tamir in the hero, Sonsgolon in the feature and the railway in engineering. The later requested slideshow can present those same three approved images in the hero on demand; retain only the first slide in initial HTML. Use text links for additional selected projects. The project index derives photographic or text-only presentation from approved media in the registry and preserves authored order, total count and filter behavior. Do not add a second image-availability flag or restore large blank image cards. `ProjectImage.presentation` chooses `feature`, `index-feature`, `index` or `detail`; review its responsive `sizes` against the actual gutter and column width when changing a placement.
 
 The generic SVG on engineering is explanatory content, not project media. Keep that distinction in its caption, retain MN/EN descriptions without JavaScript, and preserve keyboard selection and reduced-motion behavior. Do not add project dimensions, performance claims or invented calculation results to the diagram. Header edits must retain measured desktop-link clearance, enlarged-text collapse and the complete menu. Team identity, roles, portrait rights and crops remain governed by the existing approval rules above.
 

@@ -1,7 +1,11 @@
 import { MediaImage } from "../../components/media-image";
+import { ProjectSlideshow } from "../../components/project-slideshow";
+import { media } from "../../content/media";
+import { companyHistory } from "../../content/company-history";
 import Link from "../../lib/link";
 import { ProjectFeature } from "../../components/projects";
 import { TeamSection } from "../../components/team";
+import { PartnersSection } from "../../components/partners";
 import {
   SectionHeading,
   ExpertiseGrid,
@@ -9,7 +13,7 @@ import {
   Timeline,
   ContactCTA,
 } from "../../components/sections";
-import { projects, site, type Locale } from "../../content/site";
+import { projects, site, type Locale, type Project } from "../../content/site";
 import { pageMetadata } from "../../lib/metadata";
 export async function generateMetadata({
   params,
@@ -25,29 +29,41 @@ export default async function Home({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale: l } = await params;
+  const heroSlides = ["ikh-tamir", "sonsgolon", "tavantolgoi-zuunbayan"]
+    .map((slug) => projects.find((project) => project.slug === slug))
+    .filter((project): project is Project =>
+      Boolean(
+        project &&
+        media[project.slug]?.usageApproved &&
+        media[project.slug]?.variants.length,
+      ),
+    )
+    .map((project) => {
+      const image = media[project.slug];
+      return {
+        slug: project.slug,
+        name: project.name[l],
+        facts: [
+          project.location[l],
+          project.length?.replace(" m", l === "mn" ? " м" : " m"),
+        ]
+          .filter(Boolean)
+          .join(" / "),
+        image: {
+          width: image.width,
+          height: image.height,
+          alt: image.alt[l],
+          position: image.position,
+          mobilePosition: image.mobilePosition,
+          variants: image.variants,
+          rendering: image.kind === "rendering",
+        },
+      };
+    });
   return (
     <main id="main" className="portfolio-home">
-      <section className="image-hero">
-        <div className="hero-visual">
-          <MediaImage
-            id="ikh-tamir"
-            locale={l}
-            priority
-            className="hero-picture"
-          />
-          <div className="hero-shade" aria-hidden="true" />
-          <Link
-            href={`/${l}/projects/ikh-tamir`}
-            className="hero-image-caption"
-          >
-            {l === "mn" ? "Их Тамирын голын гүүр" : "Ikh Tamir River Bridge"}
-            <span>
-              {l === "mn"
-                ? "Архангай · Батцэнгэл / 198 м"
-                : "Battsengel · Arkhangai / 198 m"}
-            </span>
-          </Link>
-        </div>
+      <section className="image-hero image-hero-slideshow">
+        <ProjectSlideshow locale={l} slides={heroSlides} />
         <div className="hero-editorial">
           <p className="eyebrow">
             <span className="hero-rule" aria-hidden="true" />
@@ -95,6 +111,7 @@ export default async function Home({
           </h2>
           <div className="intro-copy">
             <p>{site.description[l]}</p>
+            <p className="company-history-summary">{companyHistory.summary[l]}</p>
             <Link className="text-link" href={`/${l}/about`}>
               {l === "mn" ? "Компанийн тухай" : "About the company"}{" "}
               <span aria-hidden="true">↗</span>
@@ -194,6 +211,7 @@ export default async function Home({
         <CredentialPanel locale={l} />
         <Timeline locale={l} />
       </section>
+      <PartnersSection locale={l} />
       <ContactCTA locale={l} />
       <script
         type="application/ld+json"

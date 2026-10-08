@@ -3,26 +3,26 @@ import { team, directorMessage, type TeamMember } from "../content/team";
 import { media } from "../content/media";
 import type { Locale } from "../content/site";
 import { MediaImage } from "./media-image";
+import { TeamSelector } from "./team-selector";
 import Link from "../lib/link";
+import { asset } from "../lib/paths";
 
 export function TeamPortrait({
   member,
   locale,
   index,
+  sizes = "(max-width: 479px) 90vw, (max-width: 900px) 43vw, 29vw",
 }: {
   member: TeamMember;
   locale: Locale;
   index: number;
+  sizes?: string;
 }) {
   const portrait = member.portraitId ? media[member.portraitId] : undefined;
   if (portrait?.kind === "portrait" && portrait.usageApproved) {
     return (
       <div className="team-portrait">
-        <MediaImage
-          id={portrait.id}
-          locale={locale}
-          sizes="(max-width: 479px) 90vw, (max-width: 900px) 43vw, 29vw"
-        />
+        <MediaImage id={portrait.id} locale={locale} sizes={sizes} />
       </div>
     );
   }
@@ -101,7 +101,32 @@ export function TeamSection({ locale }: { locale: Locale }) {
           <span aria-hidden="true">↗</span>
         </Link>
       </div>
-      <TeamGrid locale={locale} preview />
+      <TeamSelector
+        locale={locale}
+        contactHref={asset(`/${locale}/contact/`)}
+        members={team.map((member, index) => ({
+          id: member.id,
+          name: member.name[locale],
+          role: member.role[locale],
+          href: asset(`/${locale}/team/#${member.id}`),
+          portrait: (
+            <TeamPortrait
+              member={member}
+              locale={locale}
+              index={index}
+              sizes="(max-width: 479px) 86vw, (max-width: 1023px) 42vw, 30vw"
+            />
+          ),
+          thumbnail: (
+            <TeamPortrait
+              member={member}
+              locale={locale}
+              index={index}
+              sizes="(max-width: 479px) 40vw, (max-width: 1023px) 27vw, 15vw"
+            />
+          ),
+        }))}
+      />
     </section>
   );
 }

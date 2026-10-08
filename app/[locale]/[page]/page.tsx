@@ -1,5 +1,6 @@
 import { MediaImage } from "../../../components/media-image";
 import { media } from "../../../content/media";
+import { companyHistory } from "../../../content/company-history";
 import { notFound } from "next/navigation";
 import Link from "../../../lib/link";
 import {
@@ -14,6 +15,7 @@ import { pageMetadata } from "../../../lib/metadata";
 import { ProjectFilter } from "../../../components/project-filter";
 import { ContactForm } from "../../../components/contact-form";
 import { BridgeSchematic } from "../../../components/bridge-schematic";
+import { PartnersSection } from "../../../components/partners";
 import {
   SectionHeading,
   ExpertiseGrid,
@@ -115,6 +117,7 @@ export default async function ContentPage({
                   : "Consulting engineers.\nBridge design."}
               </h2>
               <p>{site.description[l]}</p>
+              <p className="company-history-summary">{companyHistory.summary[l]}</p>
               <p>
                 {l === "mn"
                   ? "ГБЭТ-ийн гүүрийн зураг төслийн үүргийг Онгийн болон Орхон голын Онгоцтойн гүүрийн тухай яамны нийтлэлүүд тэмдэглэсэн."
@@ -166,8 +169,8 @@ export default async function ContentPage({
               label={l === "mn" ? "ОН ЦАГ" : "MILESTONES"}
               title={
                 l === "mn"
-                  ? "Төслөөр тэмдэглэсэн замнал."
-                  : "A journey recorded through projects."
+                  ? "Бидний эхлэл.\nБидний замнал."
+                  : "Our beginnings.\nOur journey."
               }
             />
             <Timeline locale={l} />
@@ -177,6 +180,7 @@ export default async function ContentPage({
           </section>
           <DirectorMessage locale={l} />
           <TeamSection locale={l} />
+          <PartnersSection locale={l} />
         </>
       )}
       {page === "expertise" && (
